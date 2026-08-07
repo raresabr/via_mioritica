@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
+import '../widgets/offline_onboarding_sheet.dart';
 import 'about_screen.dart';
 import 'full_trail_map_screen.dart';
 import 'photo_gallery_screen.dart';
@@ -27,6 +28,16 @@ class _RootNavScreenState extends State<RootNavScreen> {
     StagesListScreen(),
     PhotoGalleryScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Faza 20: one-time offline-download onboarding tip, shown after the
+    // first frame so a valid BuildContext/Navigator is available.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      OfflineOnboardingSheet.showIfFirstLaunch(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

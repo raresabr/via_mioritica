@@ -10,6 +10,7 @@ import 'src/services/content_cache_box.dart';
 import 'src/services/crashlytics_service.dart';
 import 'src/services/progress_box.dart';
 import 'src/services/remote_config_service.dart';
+import 'src/services/settings_box.dart';
 import 'src/utils/app_theme.dart';
 
 Future<void> main() async {
@@ -55,6 +56,10 @@ Future<void> main() async {
   // Initialise the Hive progress box (Faza 15: local-only "stage
   // completed" tracking, no account required).
   await ProgressBox.init();
+
+  // Initialise the Hive settings box (Faza 20: one-off local UI-state
+  // flags, e.g. "has the offline-download onboarding tip been shown?").
+  await SettingsBox.init();
 
   runApp(
     const ProviderScope(

@@ -113,5 +113,15 @@ class S {
   // Privacy policy (Faza 18)
   static const privacyPolicyLinkLabel = 'Politica de confidențialitate';
   static const privacyPolicyTitle = 'Politica de confidențialitate';
+
+  // Offline download onboarding (Faza 20)
+  static const offlineOnboardingTitle = 'Descarcă hărțile offline';
+  static const offlineOnboardingBody =
+      'În zonele montane semnalul la internet poate lipsi complet. Pentru '
+      'a avea harta și traseul GPS disponibile fără conexiune, intră la '
+      'fiecare etapă din "Ghidul Călătorului" și apasă "Descarcă pentru '
+      'offline" din secțiunea "Hartă offline" — înainte de a pleca la '
+      'drum.';
+  static const offlineOnboardingButton = 'Am înțeles';
 }
 

@@ -612,6 +612,32 @@ alone can still identify a segment:
 
 ---
 
+## Offline download onboarding (Faza 20)
+
+`OfflineOnboardingSheet` (`lib/src/widgets/offline_onboarding_sheet.dart`)
+— a non-dismissible-by-swipe modal bottom sheet, shown **exactly once**,
+the first time `RootNavScreen` builds (i.e. right after the splash
+screen), explaining that mountain trails often have zero signal and
+pointing users at the per-stage "Hartă offline" download feature (Faza
+2b) *before* they start hiking, not after they discover the gap already
+offline.
+
+- **`SettingsBox`** (`lib/src/services/settings_box.dart`) — new, minimal
+  Hive box for one-off local UI-state flags
+  (`has_seen_offline_onboarding`). Deliberately separate from
+  `ProgressBox` (Faza 15, actual hiking progress — never mixed with UI
+  flags) and `ContentCacheBox` (Faza 13, disposable content cache — a
+  settings flag must survive a cache clear).
+- `OfflineOnboardingSheet.showIfFirstLaunch(context)` checks/sets the flag
+  itself, so `RootNavScreen.initState()` (via
+  `WidgetsBinding.instance.addPostFrameCallback`, for a valid
+  `BuildContext`) can call it unconditionally on every app start.
+- Verified: `flutter analyze` clean (same 8 pre-existing infos),
+  `flutter build apk --debug` and `flutter build ios --no-codesign
+  --debug` both succeed.
+
+---
+
 ## Phase roadmap
 - **Phase 0** ✅ Environment + project bootstrap
 - **Phase 1** 🔄 Content structuring (add real GPX + JSON)
@@ -642,4 +668,5 @@ alone can still identify a segment:
   usage events — see below)
 - **Phase 18** ✅ Privacy policy screen (see below)
 - **Phase 19** ✅ Colorblind-safe segment shortCode badges (see below)
+- **Phase 20** ✅ Offline download onboarding (one-time tip — see below)
 
