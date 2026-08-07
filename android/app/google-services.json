@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "744736994673",
+    "project_id": "via-mioritica-app",
+    "storage_bucket": "via-mioritica-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:744736994673:android:4a2457b9fc0a670a4732d0",
+        "android_client_info": {
+          "package_name": "ro.viamioritica.via_mioritica"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXblLnUx5MG6Jt9rDUYC0v1e2gX_eSdic"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

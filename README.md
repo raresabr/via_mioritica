@@ -232,17 +232,53 @@ tab now renders all 3 stage polylines + legend correctly with no error.
 
 ## Internal testing distribution
 
-### Android — Firebase App Distribution
+### Android — Firebase App Distribution (Faza 11, formalized)
+
+**One-time setup** (already done for this project — documented here for
+reference/reproducibility on a new machine):
+1. `npm install -g firebase-tools` + `firebase login` (interactive browser
+   auth, once per machine).
+2. Firebase project `via-mioritica-app` created (Spark/free plan), with an
+   Android app (`ro.viamioritica.via_mioritica`) and iOS app
+   (`ro.viamioritica.viaMioritica`) registered. Config files committed:
+   `android/app/google-services.json`, `ios/Runner/GoogleService-Info.plist`
+   (these contain a restricted client identifier, not a secret — standard
+   Firebase practice to commit them; needed later for Fazele 14/16
+   Remote Config/Crashlytics too, not used by App Distribution itself).
+3. App Distribution "Get started" pressed once per app in the [Firebase
+   console](https://console.firebase.google.com/project/via-mioritica-app/appdistribution)
+   — this onboarding step **cannot** be done via CLI/API, console-only,
+   one-time per app.
+4. Tester group **"Testeri Interni"** (alias `testeri-interni`) created via
+   `firebase appdistribution:group:create`, testers added via
+   `firebase appdistribution:testers:add <emails> --group-alias testeri-interni`.
+
+**Repeatable release flow** — `Makefile` at the repo root:
 ```bash
-flutter build apk --release
-# Upload app-release.apk to Firebase App Distribution
+# Build the release APK only:
+make build-android
+
+# Upload an already-built APK to the "Testeri Interni" group:
+make distribute-android
+
+# Full flow in one command (release notes default to the latest git commit
+# message, or pass your own):
+make release-android NOTES="Fixed the map loading bug"
 ```
+Testers get an email invite from Firebase with a link to install (Android
+allows sideloading via the Firebase App Distribution tester app — no Play
+Store needed for internal testing).
 
 ### iOS — TestFlight internal testers (instant, no App Store review)
 ```bash
 flutter build ipa
 # Xcode → Product → Archive → Distribute → TestFlight Internal Testing
 ```
+(Firebase App Distribution also supports iOS releases via
+`firebase appdistribution:distribute <path>.ipa --app <iOS_APP_ID> --groups
+testeri-interni`, using the same tester group — not wired into the Makefile
+yet since TestFlight is the primary iOS channel per the original plan; can
+be added as a `distribute-ios` target later if useful.)
 
 ---
 
@@ -354,4 +390,8 @@ address this; not yet implemented.
 - **Phase 13** ✅ Cache-first content loading (Hive)
 - **Phase 17** ✅ Hosted JSON (GitHub raw) replaces the simulated fetch;
   repo made public to serve it; ETag-based background revalidation
+- **Phase 10** ✅ Branding footer → stag-line.com (completed alongside
+  Phase 8, verified separately end-to-end)
+- **Phase 11** ✅ Firebase App Distribution formalized: named tester group
+  ("Testeri Interni"), repeatable `Makefile` (`make release-android`)
 
