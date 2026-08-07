@@ -638,6 +638,42 @@ offline.
 
 ---
 
+## Resumable offline downloads (Faza 21)
+
+**Bug fixed first**: before this phase, `OfflineMapController._loadStats()`
+only checked "are there any cached tiles at all?" to decide
+`notDownloaded` vs. `complete` — so a download interrupted partway through
+(app killed, crash, OS kills the process in the background) looked
+identically **"complete"** next time the screen opened, even though most
+tiles were still missing.
+
+Fixed using FMTC's own built-in download-recovery system (`FMTCRoot.recovery`),
+which already records a recovery entry (store name + last successful tile
+index) whenever a download starts, and only clears it on a clean finish:
+
+- **`OfflineMapRepository.getFailedRecovery(stageId)`** — looks up a
+  "failed" recovery entry (i.e. one no longer actually running in memory —
+  see FMTC's `RootRecovery` docs) matching this stage's store.
+- **`OfflineMapRepository.regionFromRecovery(recovered)`** — converts it
+  back into a `DownloadableRegion` whose `start` skips tiles already
+  downloaded, so resuming re-fetches only the missing tiles, never the
+  ones already saved.
+- New `OfflineDownloadStatus.interrupted` state — `_loadStats()` now
+  checks for a failed recovery *before* falling back to the old
+  empty/complete check, and `OfflineDownloadCard` shows a distinct
+  "Descărcarea a fost întreruptă..." message with a **"Reia descărcarea"**
+  button (`OfflineMapController.resumeInterrupted()`) instead of silently
+  claiming the download is done.
+- `cancelAndDelete()` also discards the stale recovery entry (via
+  `OfflineMapRepository.cancelRecovery(id)`) when the user chooses to
+  delete/restart instead of resuming, so it can't resurface later.
+- Verified: `flutter analyze` clean (same 8 pre-existing infos),
+  `flutter build apk --debug` and `flutter build ios --no-codesign
+  --debug` both succeed. Actually killing the app mid-download and
+  confirming the resume flow end-to-end is left to manual device testing.
+
+---
+
 ## Phase roadmap
 - **Phase 0** ✅ Environment + project bootstrap
 - **Phase 1** 🔄 Content structuring (add real GPX + JSON)
@@ -669,4 +705,6 @@ offline.
 - **Phase 18** ✅ Privacy policy screen (see below)
 - **Phase 19** ✅ Colorblind-safe segment shortCode badges (see below)
 - **Phase 20** ✅ Offline download onboarding (one-time tip — see below)
+- **Phase 21** ✅ Resumable offline downloads across app restarts (see
+  below)
 

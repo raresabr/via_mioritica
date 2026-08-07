@@ -147,6 +147,47 @@ class OfflineDownloadCard extends ConsumerWidget {
           ],
         );
 
+      case OfflineDownloadStatus.interrupted:
+        // Faza 21 — the app was likely killed/crashed mid-download last
+        // time; FMTC's recovery data lets us resume from the last
+        // successfully downloaded tile instead of starting over.
+        final resumePercent = state.progressPercent ?? 0;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              S.offlineInterrupted,
+              style: const TextStyle(fontSize: 13, color: Colors.orange),
+            ),
+            const SizedBox(height: 6),
+            LinearProgressIndicator(value: resumePercent / 100),
+            const SizedBox(height: 4),
+            Text(
+              '${resumePercent.toStringAsFixed(0)}% completă',
+              style: const TextStyle(
+                  fontSize: 12, color: AppColors.textMuted),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                ElevatedButton.icon(
+                  onPressed: controller.resumeInterrupted,
+                  icon: const Icon(Icons.download, size: 16),
+                  label: const Text(S.offlineResumeDownloadButton),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.green,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+                TextButton(
+                  onPressed: controller.cancelAndDelete,
+                  child: const Text(S.offlineCancelButton),
+                ),
+              ],
+            ),
+          ],
+        );
+
       case OfflineDownloadStatus.complete:
         return Row(
           children: [

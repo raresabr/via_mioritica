@@ -56,6 +56,13 @@ class S {
   static const offlineDeleteButton = 'Șterge harta offline';
   static const offlineRetryButton = 'Încearcă din nou';
 
+  // Resumable downloads across app restarts (Faza 21)
+  static const offlineInterrupted =
+      'Descărcarea a fost întreruptă (ex: aplicația a fost închisă). '
+      'Poți relua de unde ai rămas, fără să descarci din nou tile-urile '
+      'deja salvate.';
+  static const offlineResumeDownloadButton = 'Reia descărcarea';
+
   // GPS
   static const permissionTitle = 'Localizare GPS';
   static const permissionBody =

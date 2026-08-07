@@ -42,12 +42,14 @@ class OfflineMapRepository {
     return region.toDownloadable(
       minZoom: MapConfig.offlineMinZoom,
       maxZoom: MapConfig.offlineMaxZoom,
-      options: TileLayer(
-        urlTemplate: MapConfig.tileUrl,
-        userAgentPackageName: 'ro.viamioritica.app',
-      ),
+      options: _tileLayerOptions,
     );
   }
+
+  TileLayer get _tileLayerOptions => TileLayer(
+    urlTemplate: MapConfig.tileUrl,
+    userAgentPackageName: 'ro.viamioritica.app',
+  );
 
   /// Counts tiles in the region before download, to show a size estimate.
   Future<int> countTiles(String stageId, DownloadableRegion region) {
@@ -98,4 +100,34 @@ class OfflineMapRepository {
     if (!ready) return;
     await FMTCStore(storeName(stageId)).manage.delete();
   }
+
+  /// Faza 21 — resumable downloads across app restarts.
+  ///
+  /// FMTC records a "recovery" entry (store name + progress) whenever a
+  /// download starts, and only clears it if the download finishes
+  /// normally. If the app is killed/crashes mid-download, that entry
+  /// survives — this looks it up for [stageId]'s store, filtered to only
+  /// "failed" ones (i.e. no longer actually running in memory, see
+  /// `RootRecovery` docs), so an interrupted download can be detected and
+  /// resumed later without redownloading tiles it already fetched.
+  Future<RecoveredRegion?> getFailedRecovery(String stageId) async {
+    final all = await FMTCRoot.recovery.recoverableRegions;
+    for (final entry in all) {
+      if (entry.isFailed && entry.region.storeName == storeName(stageId)) {
+        return entry.region;
+      }
+    }
+    return null;
+  }
+
+  /// Converts a recovered region back into a [DownloadableRegion] whose
+  /// `start` is set to skip tiles already downloaded before the
+  /// interruption — resuming, not restarting, the download.
+  DownloadableRegion regionFromRecovery(RecoveredRegion recovered) =>
+      recovered.toDownloadable(_tileLayerOptions);
+
+  /// Discards a stale recovery entry (e.g. after the resumed download
+  /// finishes, or the user cancels/deletes the store instead of resuming).
+  Future<void> cancelRecovery(int recoveryId) =>
+      FMTCRoot.recovery.cancel(recoveryId);
 }
