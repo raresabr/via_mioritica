@@ -470,6 +470,32 @@ coordinates) — only anonymous, aggregate signals.
 
 ---
 
+## Privacy policy (Faza 18)
+
+`PrivacyPolicyScreen` (`lib/src/screens/privacy_policy_screen.dart`) —
+static, hardcoded Romanian text reachable from "Despre Noi" (link below the
+main content, above the branding footer). **Deliberately hardcoded**, not
+fetched from the hosted JSON like the rest of "Despre Noi" content — a
+legal document shouldn't change silently via a background cache
+revalidation (Faza 13/17) without a new app release/review.
+
+Written to accurately describe what the app does as of Faza 16: no
+account/login (consistent with Faza 15's local-only progress), GPS used
+only live on-device (never stored/transmitted), Firebase Crashlytics
+(automatic crash reports: error message, device model, OS/app version —
+no name/email), Firebase Analytics (anonymous aggregate usage events —
+screen views, `stage_completed`), locally-stored content cache + offline
+maps, and third-party services used (Firebase/Google, MapTiler).
+
+**Decision, per the plan's GDPR/ePrivacy note**: no consent banner was
+added — all data collected (crash reports, anonymous analytics) is
+non-personally-identifiable and the policy above documents it
+transparently, which is deemed sufficient for this MVP's scope. Revisit if
+future features add any PII collection (e.g. an account system).
+
+
+---
+
 ## Tech stack
 | Concern | Package |
 |---|---|
@@ -593,4 +619,5 @@ address this; not yet implemented.
   no account — see below)
 - **Phase 16** ✅ Crashlytics + Analytics (crash reporting + anonymous
   usage events — see below)
+- **Phase 18** ✅ Privacy policy screen (see below)
 

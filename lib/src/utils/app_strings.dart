@@ -109,5 +109,9 @@ class S {
   static const progressMarkCompleted = 'Marchează etapa ca finalizată';
   static const progressCompletedLabel = 'Etapă finalizată';
   static const progressSummary = 'etape finalizate';
+
+  // Privacy policy (Faza 18)
+  static const privacyPolicyLinkLabel = 'Politica de confidențialitate';
+  static const privacyPolicyTitle = 'Politica de confidențialitate';
 }
 

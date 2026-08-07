@@ -5,6 +5,7 @@ import '../providers/providers.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
 import '../widgets/brand_footer.dart';
+import 'privacy_policy_screen.dart';
 
 class AboutScreen extends ConsumerWidget {
   const AboutScreen({super.key});
@@ -69,6 +70,26 @@ class AboutScreen extends ConsumerWidget {
                     fontSize: 14, height: 1.6, color: AppColors.textDark),
               ),
               const SizedBox(height: 16),
+              Center(
+                child: TextButton.icon(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const PrivacyPolicyScreen(),
+                    ),
+                  ),
+                  icon: const Icon(Icons.privacy_tip_outlined,
+                      size: 18, color: AppColors.textMuted),
+                  label: const Text(
+                    S.privacyPolicyLinkLabel,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textMuted,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ),
               Center(
                 child: BrandFooter(
                   text: about.footerText.isNotEmpty
