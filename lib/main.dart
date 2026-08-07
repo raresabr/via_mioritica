@@ -5,7 +5,9 @@ import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
 import 'src/screens/splash_screen.dart';
+import 'src/services/analytics_service.dart';
 import 'src/services/content_cache_box.dart';
+import 'src/services/crashlytics_service.dart';
 import 'src/services/progress_box.dart';
 import 'src/services/remote_config_service.dart';
 import 'src/utils/app_theme.dart';
@@ -28,6 +30,13 @@ Future<void> main() async {
   } catch (_) {
     // App still works normally; isForceUpdateRequired stays false.
   }
+
+  // Faza 16: crash reporting + usage analytics. Must come after
+  // Firebase.initializeApp() above; both fail open (no crash
+  // reporting/analytics for the session) if Firebase itself didn't
+  // initialise (e.g. offline first launch).
+  await CrashlyticsService.init();
+  await AnalyticsService.init();
 
   // Initialise FMTC (offline tile caching). Must happen before any FMTC
   // usage (store creation, tile provider, downloads). GPL-v3 licensed —
@@ -63,6 +72,8 @@ class ViaMioriticaApp extends StatelessWidget {
       title: 'Via Mioritica',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
+      // Faza 16: automatic screen_view analytics on every route change.
+      navigatorObservers: [AnalyticsService.observer],
       home: const SplashScreen(),
     );
   }

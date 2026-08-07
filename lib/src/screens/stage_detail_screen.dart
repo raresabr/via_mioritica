@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/stage_model.dart';
 import '../models/poi_model.dart';
 import '../providers/progress_providers.dart';
+import '../services/analytics_service.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
 import '../widgets/offline_download_card.dart';
@@ -98,9 +99,15 @@ class StageDetailScreen extends ConsumerWidget {
                   // Progress tracking (Faza 15 — local, no account)
                   _CompletedToggle(
                     isCompleted: isCompleted,
-                    onChanged: (value) => ref
-                        .read(progressProvider.notifier)
-                        .setCompleted(stage.id, value),
+                    onChanged: (value) {
+                      ref
+                          .read(progressProvider.notifier)
+                          .setCompleted(stage.id, value);
+                      // Faza 16: anonymous, stage-id-only usage signal.
+                      if (value) {
+                        AnalyticsService.logStageCompleted(stage.id);
+                      }
+                    },
                   ),
                   const SizedBox(height: 20),
 

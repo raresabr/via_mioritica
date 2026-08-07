@@ -1,6 +1,7 @@
 // lib/src/screens/splash_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/analytics_service.dart';
 import '../services/remote_config_service.dart';
 import '../utils/app_colors.dart';
 import 'force_update_screen.dart';
@@ -36,7 +37,13 @@ class _SplashScreenState extends State<SplashScreen>
       if (!mounted) return;
       // Faza 14: force-update gate — Remote Config was already fetched in
       // main() before runApp(), so this is a synchronous, instant check.
-      final destination = RemoteConfigService.isForceUpdateRequired
+      final forceUpdateRequired = RemoteConfigService.isForceUpdateRequired;
+      if (forceUpdateRequired) {
+        // Faza 16: confirms a Remote Config force-update push actually
+        // reaches real devices (visible in the Firebase Analytics console).
+        AnalyticsService.logForceUpdateShown();
+      }
+      final destination = forceUpdateRequired
           ? const ForceUpdateScreen()
           : const RootNavScreen();
       Navigator.of(context).pushReplacement(

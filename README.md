@@ -429,6 +429,47 @@ Checkbox-per-stage + overall % completion, **local only, no account/login**
 
 ---
 
+## Crash reporting + analytics (Faza 16)
+
+Firebase Crashlytics (crash reporting) and Firebase Analytics (anonymous
+usage), both routed through the same `via-mioritica-app` Firebase project
+already wired up in Faza 14. Deliberately minimal scope, consistent with
+"no account" (Faza 15): no PII is ever logged (no names, emails, GPS
+coordinates) — only anonymous, aggregate signals.
+
+- **`CrashlyticsService`** (`lib/src/services/crashlytics_service.dart`) —
+  registers `FlutterError.onError` and
+  `PlatformDispatcher.instance.onError` to forward uncaught Flutter/async
+  errors to Crashlytics, plus a `recordNonFatal()` helper for caught
+  errors worth surfacing without crashing. Disabled in debug builds
+  (`kDebugMode`) so local `flutter run` sessions don't pollute the
+  crash-free-users metric.
+- **`AnalyticsService`** (`lib/src/services/analytics_service.dart`) —
+  `FirebaseAnalyticsObserver` wired into `MaterialApp.navigatorObservers`
+  for automatic screen-view tracking, plus two explicit events:
+  `stage_completed` (stage id only, fired when a stage checkbox — Faza 15
+  — is ticked on) and `force_update_shown` (fired when the Faza 14
+  force-update gate actually blocks a real device — confirms a Remote
+  Config push reaches users). Also disabled in debug builds.
+- Both `init()` calls happen in `main()` right after
+  `Firebase.initializeApp()`, and both fail open (try/catch, non-fatal) —
+  an offline first launch just means no crash/analytics data for that
+  session, never a blocked app.
+- **Android**: `com.google.firebase.crashlytics` Gradle plugin added
+  (`android/settings.gradle.kts` + `android/app/build.gradle.kts`);
+  required bumping `com.google.gms.google-services` from `4.3.15` to
+  `4.4.4` (Crashlytics Gradle plugin v3 requires Google Services ≥4.4.1).
+- **iOS**: no extra config needed — deployment target is already 15.0
+  (set for FMTC/ObjectBox in an earlier phase), which covers both new
+  pods; `pod install` picks them up automatically via `firebase_core`.
+- Verified: `flutter analyze` clean (same 8 pre-existing infos),
+  `flutter build apk --debug` and `flutter build ios --no-codesign
+  --debug` both succeed. Crash/event visibility in the Firebase console
+  (real device test) is left to manual verification, as with all other
+  phases.
+
+---
+
 ## Tech stack
 | Concern | Package |
 |---|---|
@@ -440,6 +481,8 @@ Checkbox-per-stage + overall % completion, **local only, no account/login**
 | Env vars | `flutter_dotenv` |
 | Coordinates | `latlong2` |
 | Remote config / force update | `firebase_core` + `firebase_remote_config` |
+| Crash reporting | `firebase_crashlytics` |
+| Analytics | `firebase_analytics` |
 | App version detection | `package_info_plus` |
 
 ---
@@ -548,4 +591,6 @@ address this; not yet implemented.
 - **Phase 14** ✅ Force-update via Firebase Remote Config (see below)
 - **Phase 15** ✅ Local progress tracking (checkbox per stage + overall %,
   no account — see below)
+- **Phase 16** ✅ Crashlytics + Analytics (crash reporting + anonymous
+  usage events — see below)
 
