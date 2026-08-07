@@ -1,55 +1,108 @@
 // lib/src/utils/cache_first_loader.dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../services/content_cache_box.dart';
+import 'content_config.dart';
 
-/// Faza 13 — cache-first content loading.
+/// Faza 13/17 — cache-first content loading with a real hosted JSON source.
 ///
-/// On a cache MISS (first launch, or cache cleared), this simulates ~1s of
-/// network latency before loading from [loadFromSource] (the bundled JSON
-/// asset — the offline-first fallback for the MVP), then persists the raw
-/// decoded JSON to a Hive box so subsequent app launches/navigations read
-/// directly from cache with **zero** delay. This lets the UI's existing
-/// loading spinners (every screen already uses `AsyncValue.when(loading: …)`
-/// via Riverpod `FutureProvider`s) exercise a realistic "fetching" state
-/// even though there's no real backend yet.
+/// Read path for [load]:
+/// 1. **Cache HIT** → return the cached data **immediately** (no network
+///    wait), then kick off a fire-and-forget background revalidation
+///    against the hosted URL (conditional GET via `If-None-Match`/ETag). If
+///    the hosted content changed, the cache is updated silently — the
+///    *next* cold start of the app will pick up the new content. This is
+///    what makes "update content without a new app release" possible
+///    (Faza 17) while keeping every screen navigation instant and
+///    network-free (only the first read per app session touches this
+///    class at all — see each repository's own in-memory `_cache`).
+/// 2. **Cache MISS** (first install, or cache cleared) → try a real HTTP
+///    GET against the hosted JSON first; on any failure (offline, DNS,
+///    timeout, non-200) fall back to the bundled JSON asset
+///    ([loadFromBundledAsset]) — the offline-first guarantee for a clean
+///    install with no connectivity.
 ///
-/// TODO(Faza 17 — hosted JSON): once content is served from a real hosted
-/// endpoint, replace [loadFromSource] with an actual `http.get(...)` call
-/// and delete [simulatedDelay] entirely. The cache-first read/write logic
-/// below does not need to change.
+/// Change detection uses the HTTP `ETag` response header (GitHub's raw CDN
+/// sets one per file) rather than a hand-maintained "version" field inside
+/// each JSON file — it updates itself automatically whenever content
+/// actually changes, with no risk of a content editor forgetting to bump a
+/// version number.
 class CacheFirstLoader {
-  static const Duration simulatedDelay = Duration(seconds: 1);
-
-  /// Loads raw (decoded JSON) content for [cacheKey]:
-  /// 1. Cache HIT → return immediately, no delay (repeat launches, offline).
-  /// 2. Cache MISS → simulate network delay, call [loadFromSource], persist
-  ///    the result to cache, then return it (first install / cache cleared).
+  /// Loads raw (decoded JSON) content for [cacheKey], from [hostedUrl] with
+  /// [loadFromBundledAsset] as the offline-first fallback.
   static Future<dynamic> load({
     required String cacheKey,
-    required Future<dynamic> Function() loadFromSource,
+    required String hostedUrl,
+    required Future<dynamic> Function() loadFromBundledAsset,
   }) async {
     final box = ContentCacheBox.instance;
-    final cached = box.get(cacheKey);
-    if (cached != null) {
-      return cached;
+    final entry = box.get(cacheKey);
+
+    if (entry is Map && entry.containsKey('data')) {
+      // Cache-first: return instantly, revalidate quietly in the background.
+      _revalidateInBackground(cacheKey, hostedUrl, entry['etag'] as String?);
+      return entry['data'];
     }
-    // TODO(Faza 17): remove this artificial delay when [loadFromSource]
-    // becomes a real network call — see class doc above.
-    await Future.delayed(simulatedDelay);
-    final data = await loadFromSource();
-    await box.put(cacheKey, data);
-    return data;
+
+    // Cache MISS: try the real hosted fetch first.
+    try {
+      final response = await http
+          .get(Uri.parse(hostedUrl))
+          .timeout(ContentConfig.networkTimeout);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        await _store(cacheKey, data, response.headers['etag']);
+        return data;
+      }
+      throw http.ClientException('Unexpected status ${response.statusCode}');
+    } catch (_) {
+      // Offline-first fallback: bundled JSON asset ships with the app, so a
+      // clean install with zero connectivity still fully works.
+      final data = await loadFromBundledAsset();
+      await _store(cacheKey, data, null);
+      return data;
+    }
   }
 
+  static Future<void> _revalidateInBackground(
+    String cacheKey,
+    String hostedUrl,
+    String? etag,
+  ) async {
+    try {
+      final headers = <String, String>{if (etag != null) 'If-None-Match': etag};
+      final response = await http
+          .get(Uri.parse(hostedUrl), headers: headers)
+          .timeout(ContentConfig.networkTimeout);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        await _store(cacheKey, data, response.headers['etag']);
+      }
+      // 304 Not Modified (or any other non-200) → cache is already current,
+      // or hosted content is temporarily unreachable; nothing to do.
+    } catch (_) {
+      // Offline or hosted URL unreachable — silently keep the existing
+      // cache, no error surfaced to the UI (this runs unawaited).
+    }
+  }
+
+  static Future<void> _store(String cacheKey, dynamic data, String? etag) =>
+      ContentCacheBox.instance.put(cacheKey, {
+        'data': data,
+        'etag': etag,
+        'fetchedAt': DateTime.now().toIso8601String(),
+      });
+
   /// Clears a single cached key. Useful for tests, manual cache-busting, or
-  /// (later) a "refresh content" action once Faza 17 lands.
+  /// (later) a "refresh content" action.
   static Future<void> invalidate(String cacheKey) =>
       ContentCacheBox.instance.delete(cacheKey);
 }
 
-/// Hive round-trips JSON maps as `Map<dynamic, dynamic>` (not
+/// Hive round-trips JSON maps as a `Map` with dynamic keys (not
 /// `Map<String, dynamic>`), so every repository must re-cast nested maps
 /// before passing them to a model's `fromJson`. Works whether [v] came
 /// straight from `dart:convert`'s `json.decode` (already `Map<String,
-/// dynamic>`) or from the Hive cache (a `Map` with dynamic keys).
+/// dynamic>`) or from the Hive cache.
 Map<String, dynamic> asStringKeyedMap(dynamic v) =>
     Map<String, dynamic>.from(v as Map);

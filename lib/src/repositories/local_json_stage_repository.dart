@@ -3,14 +3,16 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import '../models/stage_model.dart';
 import '../utils/cache_first_loader.dart';
+import '../utils/content_config.dart';
 import 'stage_repository.dart';
 
-/// Reads stages from the bundled `assets/data/stages.json` file, through
-/// [CacheFirstLoader] (Faza 13: simulated fetch → Hive cache → cache-first
-/// on subsequent reads). This is the offline-first fallback/source used for
-/// the MVP; a future `ApiStageRepository` implementing the same
-/// [StageRepository] interface can fetch from a hosted endpoint instead
-/// (Faza 17) without any UI change.
+/// Reads stages primarily from the hosted JSON (Faza 17, GitHub raw), via
+/// [CacheFirstLoader] (Faza 13: cache-first + background revalidation),
+/// falling back to the bundled `assets/data/stages.json` offline/on first
+/// install with no connectivity. This is still the offline-first
+/// fallback/source used for the MVP; a future `ApiStageRepository` with a
+/// different backend could implement the same [StageRepository] interface
+/// without any UI change.
 class LocalJsonStageRepository implements StageRepository {
   List<StageModel>? _cache;
 
@@ -19,7 +21,8 @@ class LocalJsonStageRepository implements StageRepository {
     if (_cache != null) return _cache!;
     final raw = await CacheFirstLoader.load(
       cacheKey: 'stages',
-      loadFromSource: () async {
+      hostedUrl: ContentConfig.hostedUrlFor('stages.json'),
+      loadFromBundledAsset: () async {
         final jsonStr = await rootBundle.loadString('assets/data/stages.json');
         return json.decode(jsonStr);
       },

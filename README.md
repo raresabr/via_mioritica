@@ -148,34 +148,50 @@ target.
 
 ---
 
-## Cache-first content loading (Faza 13)
+## Cache-first content loading (Faza 13) + hosted JSON (Faza 17)
 
 Every JSON-backed repository (`stages`, `recommendations`, `photos`, `about`
-— **not** GPX, see below) routes its asset read through
-`CacheFirstLoader.load()` (`lib/src/utils/cache_first_loader.dart`), backed
-by a single Hive box (`ContentCacheBox`, initialised in `main.dart`):
+— **not** GPX, see below) routes its read through `CacheFirstLoader.load()`
+(`lib/src/utils/cache_first_loader.dart`), backed by a single Hive box
+(`ContentCacheBox`, initialised in `main.dart`):
 
 1. **Cache HIT** (any launch after the first, or offline) → return the
-   cached JSON immediately, **no delay**.
-2. **Cache MISS** (first install, or cache cleared) → simulate ~1s of
-   network latency (`CacheFirstLoader.simulatedDelay`), then load from the
-   bundled JSON asset (the offline-first fallback), cache the raw decoded
-   JSON in Hive, and return it.
+   cached JSON **immediately**, no network wait, then fire off a
+   background, unawaited revalidation request against the hosted URL
+   (conditional GET with `If-None-Match`/ETag). If the hosted file
+   changed, the cache is updated silently for the **next** cold start —
+   this is what lets content update without a new app release, while
+   every screen navigation within a session stays instant and
+   network-free.
+2. **Cache MISS** (first install, or cache cleared) → try a real HTTP GET
+   against the hosted JSON (`ContentConfig.hostedUrlFor(...)`) first; on
+   any failure (offline, DNS, timeout, non-200) fall back to the bundled
+   JSON asset under `assets/data/` — the offline-first guarantee for a
+   clean install with zero connectivity.
+
+**Hosted content source**: the same JSON files committed under
+`assets/data/*.json` in this repo, served raw via
+`https://raw.githubusercontent.com/raresabr/via_mioritica/main/assets/data/*.json`
+(`lib/src/utils/content_config.dart`). Single source of truth — editing a
+JSON file in the repo and pushing to `main` updates the hosted content
+within minutes (GitHub raw CDN cache ≈5 min), no separate CMS/backend, no
+new app release for content-only changes. **Requires the repo to stay
+public** (already the case — see License section; GPL-v3 requires public
+source anyway).
+
+**Change detection**: uses the HTTP `ETag` response header (GitHub sets one
+per file automatically) instead of a hand-maintained "version" field inside
+each JSON file — updates itself whenever content actually changes, with no
+risk of a content editor forgetting to bump a version number.
 
 Because every screen already reads content through Riverpod
-`FutureProvider`s with `AsyncValue.when(loading: ..., ...)`, the simulated
-delay automatically surfaces as a real loading spinner on cache miss — no
+`FutureProvider`s with `AsyncValue.when(loading: ..., ...)`, the network
+fetch on cache miss automatically surfaces as a real loading spinner — no
 extra UI plumbing was needed.
 
 **GPX is intentionally excluded**: GPX tracks are bundled forever (no
 API-hosted variant is planned, per "Explicitly out of scope"), so
 `LocalGpxRepository` keeps its simple in-memory cache only.
-
-**TODO (Faza 17)**: `CacheFirstLoader.load()`'s `loadFromSource` callback
-currently reads a bundled asset; when a real hosted JSON endpoint exists,
-swap it for an HTTP GET and delete `simulatedDelay` — the cache-first
-read/write logic itself does not change. This is marked with an explicit
-`// TODO(Faza 17)` in the source.
 
 ---
 
@@ -307,6 +323,7 @@ address this; not yet implemented.
   (Faza 10 branding incidentally completed alongside `BrandFooter`)
 - **Phase 9** ✅ Segment colors (#870203/#000000 alternating), consistent
   across full-trail map, legend, and Ghidul Călătorului
-- **Phase 13** ✅ Cache-first content loading (Hive) with simulated ~1s
-  fetch latency, TODO left for Faza 17 real-backend swap
+- **Phase 13** ✅ Cache-first content loading (Hive)
+- **Phase 17** ✅ Hosted JSON (GitHub raw) replaces the simulated fetch;
+  repo made public to serve it; ETag-based background revalidation
 
