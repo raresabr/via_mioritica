@@ -21,6 +21,13 @@ class MapConfig {
   static const int offlineMaxZoom = 16;
 
   /// Buffer in degrees (~3 km) around GPX track for corridor tile download.
+  /// Kept for backwards reference; use [corridorBufferMeters] for FMTC's
+  /// LineRegion (which expects a radius in meters, not degrees).
   static const double corridorBufferDeg = 0.03;
+
+  /// Corridor half-width in meters around the GPX track, used by FMTC's
+  /// LineRegion to bound the offline tile download to the trail corridor
+  /// instead of the whole country.
+  static const double corridorBufferMeters = 3000;
 }
 

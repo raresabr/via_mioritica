@@ -7,6 +7,7 @@ import '../providers/providers.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
 import '../widgets/elevation_chart.dart';
+import '../widgets/offline_download_card.dart';
 import '../widgets/poi_card.dart';
 import '../widgets/trail_map.dart';
 import 'map_screen.dart';
@@ -48,6 +49,7 @@ class StageDetailScreen extends ConsumerWidget {
                   children: [
                     TrailMap(
                       gpxAssetPath: stage.gpxFile,
+                      stageId: stage.id,
                       compact: true,
                     ),
                     // Tap hint overlay
@@ -89,6 +91,13 @@ class StageDetailScreen extends ConsumerWidget {
                 children: [
                   // Technical stats row
                   _StatsRow(stage: stage),
+                  const SizedBox(height: 20),
+
+                  // Offline map download
+                  OfflineDownloadCard(
+                    stageId: stage.id,
+                    gpxAssetPath: stage.gpxFile,
+                  ),
                   const SizedBox(height: 20),
 
                   // Description

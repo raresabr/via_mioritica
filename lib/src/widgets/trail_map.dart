@@ -1,21 +1,28 @@
 // lib/src/widgets/trail_map.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import '../providers/providers.dart';
+import '../repositories/offline_map_repository.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
 import '../utils/map_config.dart';
 
 class TrailMap extends ConsumerStatefulWidget {
   final String gpxAssetPath;
+
+  /// Stage id, used to pick the FMTC offline store for this trail's tiles.
+  /// When null, tiles are loaded online-only (no offline caching).
+  final String? stageId;
   final LatLng? userLocation;
   final bool compact; // true = small preview card, false = full screen
 
   const TrailMap({
     super.key,
     required this.gpxAssetPath,
+    this.stageId,
     this.userLocation,
     this.compact = false,
   });
@@ -27,6 +34,27 @@ class TrailMap extends ConsumerStatefulWidget {
 class _TrailMapState extends ConsumerState<TrailMap> {
   final MapController _mapController = MapController();
   bool _followUser = false;
+  FMTCTileProvider? _tileProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    // Construct the tile provider once (not on every build) — required by
+    // FMTC for good performance, see integrating-with-a-map docs.
+    if (widget.stageId != null) {
+      final storeName = OfflineMapRepository().storeName(widget.stageId!);
+      _tileProvider = FMTCTileProvider(
+        stores: {storeName: BrowseStoreStrategy.readUpdateCreate},
+        loadingStrategy: BrowseLoadingStrategy.cacheFirst,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _tileProvider?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +94,7 @@ class _TrailMapState extends ConsumerState<TrailMap> {
                   userAgentPackageName: 'ro.viamioritica.app',
                   maxZoom: MapConfig.maxZoom.toDouble(),
                   minZoom: MapConfig.minZoom.toDouble(),
+                  tileProvider: _tileProvider,
                 ),
                 if (points.isNotEmpty)
                   PolylineLayer(

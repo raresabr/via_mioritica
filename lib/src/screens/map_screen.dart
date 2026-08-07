@@ -77,6 +77,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         children: [
           TrailMap(
             gpxAssetPath: widget.stage.gpxFile,
+            stageId: widget.stage.id,
             userLocation: _userLocation,
             compact: false,
           ),

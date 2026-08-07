@@ -1,3 +1,14 @@
+## License
+
+This project is licensed under **GPL-v3** (see `LICENSE`), because it depends
+on `flutter_map_tile_caching` (FMTC) for offline map caching, which requires
+any application using it to be distributed under the same license (unless a
+proprietary license is purchased from the FMTC author). Since Via Mioritica
+is a non-commercial/volunteer project, it is released as open source to
+comply.
+
+---
+
 # Via Mioritica – Mobile App
 
 Trail guide app for the Via Mioritica hiking route (Romania).  
@@ -14,16 +25,17 @@ via_mioritica/
 │   ├── gpx/etapa-NN.gpx          ← GPX track per stage (replace placeholders!)
 │   └── images/placeholders/      ← placeholder images (swap with real photos)
 ├── lib/
-│   ├── main.dart                 ← app entry point
+│   ├── main.dart                 ← app entry point (also initialises FMTC)
 │   └── src/
-│       ├── models/               ← StageModel, PoiModel
-│       ├── repositories/         ← StagesRepository, GpxRepository
-│       ├── providers/            ← Riverpod providers (data layer)
+│       ├── models/               ← StageModel, PoiModel, RecommendationModel, PhotoModel, AboutContentModel, UserModel/UserProgressModel (stubs)
+│       ├── repositories/         ← abstract *Repository interfaces + LocalJson*/LocalGpx implementations (API-ready — see below)
+│       ├── providers/            ← Riverpod providers (data layer + offline map state)
 │       ├── screens/              ← StagesListScreen, StageDetailScreen, MapScreen
-│       ├── widgets/              ← TrailMap, ElevationChart, StageCard, PoiCard
+│       ├── widgets/               ← TrailMap, ElevationChart, StageCard, PoiCard, OfflineDownloadCard
 │       └── utils/                ← AppTheme, AppColors, AppStrings, MapConfig
 ├── android/                      ← Android-specific config (compileSdk=37)
 ├── ios/                          ← iOS-specific config (NSLocationWhenInUse set)
+├── LICENSE                       ← GPL-v3 (required by FMTC, see above)
 ├── .env                          ← secrets (GITIGNORED — never commit)
 └── .env.example                  ← template, safe to commit
 ```
@@ -110,6 +122,32 @@ flutter run -d "iPhone 15"
 
 ---
 
+## Repository architecture (API-readiness, Faza 7)
+
+Every content type (stages, GPX, recommendations, photos, about) is accessed
+through an **abstract repository interface**, never a concrete class:
+
+```
+StageRepository (interface)  →  LocalJsonStageRepository (reads assets/data/stages.json)
+GpxRepository (interface)    →  LocalGpxRepository (parses GPX assets)
+RecommendationRepository     →  LocalJsonRecommendationRepository (assets/data/recommendations.json)
+PhotoRepository              →  LocalJsonPhotoRepository (assets/data/photos.json)
+AboutRepository              →  LocalJsonAboutRepository (assets/data/about.json)
+ProgressRepository (stub)    →  no implementation yet (Faza 15 builds the real local one)
+```
+
+Riverpod providers in `providers.dart` are typed against the **interface**
+(e.g. `Provider<StageRepository>`), so swapping in a future
+`ApiStageRepository` (Faza 17, hosted JSON) only requires changing the
+provider's factory line — no screen or widget needs to change.
+
+`UserModel`/`UserProgressModel` are stubs only (no backend, no login in the
+MVP — see "Explicitly out of scope for MVP"); they exist so a future
+account-backed `ProgressRepository` implementation has a concrete shape to
+target.
+
+---
+
 ## Secrets policy
 - `.env` is **gitignored** — never commit it
 - In CI: inject via `--dart-define=MAPTILER_KEY=$SECRET` instead of `.env`
@@ -137,6 +175,7 @@ flutter build ipa
 | Concern | Package |
 |---|---|
 | Maps | `flutter_map` |
+| Offline map caching | `flutter_map_tile_caching` (FMTC, GPL-v3 — see License above) |
 | GPS | `geolocator` + `permission_handler` |
 | GPX parsing | `gpx` |
 | Elevation chart | `fl_chart` |
@@ -146,11 +185,35 @@ flutter build ipa
 
 ---
 
+## Offline maps (FMTC corridor download)
+
+Each stage's tiles are cached in its own FMTC store (`stage_<id>`), scoped to
+a **corridor buffer** around the GPX track (`MapConfig.corridorBufferMeters`,
+currently 3 km) at zoom levels `offlineMinZoom`–`offlineMaxZoom` — not the
+whole country. This keeps downloads in the tens-to-low-hundreds of MB range
+instead of gigabytes.
+
+- Download/pause/resume/cancel/delete is exposed via `OfflineDownloadCard`
+  on the stage detail screen, backed by `OfflineMapController`
+  (`lib/src/providers/offline_map_providers.dart`).
+- The estimated download size (MB) is shown to the user **before** starting,
+  computed from `countTiles()` × average tile size.
+- `TrailMap` automatically reads from the per-stage FMTC store first
+  (`BrowseLoadingStrategy.cacheFirst`), then falls back to network — so a
+  downloaded stage keeps working in airplane mode.
+- **MapTiler ToS note**: MapTiler's Free plan is limited to non-commercial
+  use (this project qualifies). If the project's status ever becomes
+  commercial, re-check https://www.maptiler.com/cloud/pricing/ before
+  shipping bulk offline downloads at scale.
+
+---
+
 ## Phase roadmap
 - **Phase 0** ✅ Environment + project bootstrap
 - **Phase 1** 🔄 Content structuring (add real GPX + JSON)
-- **Phase 2** ⬜ Offline map download (FMTC corridor caching)
+- **Phase 2** ✅ Offline map download (FMTC corridor caching)
 - **Phase 3** ✅ GPS blue-dot (foreground, geolocator wired up)
 - **Phase 4** ✅ Trail guide UI (stages, POIs, elevation chart, map)
 - **Phase 5** ⬜ Polish + internal testing release
 - **Phase 6** ⬜ Public store launch (later)
+- **Phase 7** ✅ Repository interfaces + new content models (API-readiness)

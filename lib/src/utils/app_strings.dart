@@ -40,6 +40,22 @@ class S {
   static const mapOfflineNote =
       'Harta funcționează offline dacă zona a fost descărcată anterior.';
 
+  // Offline map download
+  static const offlineSectionTitle = 'Hartă offline';
+  static const offlineNotDownloaded =
+      'Traseul nu este descărcat pentru offline.';
+  static const offlineEstimating = 'Se calculează dimensiunea descărcării…';
+  static const offlineDownloading = 'Se descarcă harta offline…';
+  static const offlinePaused = 'Descărcare pauzată.';
+  static const offlineComplete = 'Hartă disponibilă offline.';
+  static const offlineError = 'Eroare la descărcarea hărții offline.';
+  static const offlineDownloadButton = 'Descarcă pentru offline';
+  static const offlinePauseButton = 'Pauză';
+  static const offlineResumeButton = 'Reia';
+  static const offlineCancelButton = 'Anulează';
+  static const offlineDeleteButton = 'Șterge harta offline';
+  static const offlineRetryButton = 'Încearcă din nou';
+
   // GPS
   static const permissionTitle = 'Localizare GPS';
   static const permissionBody =
