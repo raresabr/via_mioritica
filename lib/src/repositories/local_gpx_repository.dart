@@ -8,6 +8,12 @@ import 'gpx_repository.dart';
 /// (no API-hosted variant is planned — see plan.md "Explicitly out of
 /// scope"), but this still implements [GpxRepository] for consistency and
 /// testability (e.g. swapping in a fake repository in widget tests).
+///
+/// Deliberately **not** wrapped in [CacheFirstLoader] (Faza 13): GPX files
+/// are bundled forever (never served from a hosted API), so there is no
+/// future "real fetch" to simulate — the existing in-memory `_cache` map is
+/// sufficient. Parsing itself is fast (<10ms even for large tracks) so a
+/// persistent Hive cache would add complexity without a real benefit.
 class LocalGpxRepository implements GpxRepository {
   final Map<String, Gpx> _cache = {};
 

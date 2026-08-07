@@ -148,6 +148,37 @@ target.
 
 ---
 
+## Cache-first content loading (Faza 13)
+
+Every JSON-backed repository (`stages`, `recommendations`, `photos`, `about`
+— **not** GPX, see below) routes its asset read through
+`CacheFirstLoader.load()` (`lib/src/utils/cache_first_loader.dart`), backed
+by a single Hive box (`ContentCacheBox`, initialised in `main.dart`):
+
+1. **Cache HIT** (any launch after the first, or offline) → return the
+   cached JSON immediately, **no delay**.
+2. **Cache MISS** (first install, or cache cleared) → simulate ~1s of
+   network latency (`CacheFirstLoader.simulatedDelay`), then load from the
+   bundled JSON asset (the offline-first fallback), cache the raw decoded
+   JSON in Hive, and return it.
+
+Because every screen already reads content through Riverpod
+`FutureProvider`s with `AsyncValue.when(loading: ..., ...)`, the simulated
+delay automatically surfaces as a real loading spinner on cache miss — no
+extra UI plumbing was needed.
+
+**GPX is intentionally excluded**: GPX tracks are bundled forever (no
+API-hosted variant is planned, per "Explicitly out of scope"), so
+`LocalGpxRepository` keeps its simple in-memory cache only.
+
+**TODO (Faza 17)**: `CacheFirstLoader.load()`'s `loadFromSource` callback
+currently reads a bundled asset; when a real hosted JSON endpoint exists,
+swap it for an HTTP GET and delete `simulatedDelay` — the cache-first
+read/write logic itself does not change. This is marked with an explicit
+`// TODO(Faza 17)` in the source.
+
+---
+
 ## Secrets policy
 - `.env` is **gitignored** — never commit it
 - In CI: inject via `--dart-define=MAPTILER_KEY=$SECRET` instead of `.env`
@@ -276,4 +307,6 @@ address this; not yet implemented.
   (Faza 10 branding incidentally completed alongside `BrandFooter`)
 - **Phase 9** ✅ Segment colors (#870203/#000000 alternating), consistent
   across full-trail map, legend, and Ghidul Călătorului
+- **Phase 13** ✅ Cache-first content loading (Hive) with simulated ~1s
+  fetch latency, TODO left for Faza 17 real-backend swap
 

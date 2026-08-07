@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'src/screens/splash_screen.dart';
+import 'src/services/content_cache_box.dart';
 import 'src/utils/app_theme.dart';
 
 Future<void> main() async {
@@ -21,6 +22,10 @@ Future<void> main() async {
     // Non-fatal: app still works online-only if FMTC fails to initialise
     // (e.g. corrupted cache directory on a previous crash).
   }
+
+  // Initialise the Hive content cache (Faza 13: cache-first content
+  // loading — see lib/src/utils/cache_first_loader.dart).
+  await ContentCacheBox.init();
 
   runApp(
     const ProviderScope(
