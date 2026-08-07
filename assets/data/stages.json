@@ -1,0 +1,73 @@
+[
+  {
+    "id": "bike",
+    "name": "Cluj-Napoca Gravel/Unpaved Cycling",
+    "gpxFile": "assets/gpx/bike.gpx",
+    "distanceKm": 45.0,
+    "elevationGainM": 720,
+    "elevationLossM": 690,
+    "difficulty": "Mediu",
+    "durationEstimate": "3–5 ore",
+    "description": "Traseu de ciclism gravel pornind din Cluj-Napoca, cu porțiuni de drum neasfaltat prin zonele periurbane și păduri. Ideal pentru mountain bike și gravel bike. Înregistrat cu Garmin Connect pe 26 iulie 2026.",
+    "coverImage": "assets/images/placeholders/stage_placeholder.png",
+    "pois": []
+  },
+  {
+    "id": "transfagarasan",
+    "name": "Cârtisoara – Transfăgărășan Gravel Cycling",
+    "gpxFile": "assets/gpx/transfagarasan.gpx",
+    "distanceKm": 62.0,
+    "elevationGainM": 1850,
+    "elevationLossM": 1820,
+    "difficulty": "Dificil",
+    "durationEstimate": "5–8 ore",
+    "description": "Traseu de ciclism gravel pe Transfăgărășan, pornind din Cârtisoara. Urcuș spectaculos prin Munții Făgăraș cu peisaje alpine de excepție. Înregistrat cu Garmin Connect pe 18 iulie 2026.",
+    "coverImage": "assets/images/placeholders/stage_placeholder.png",
+    "pois": []
+  },
+  {
+    "id": "moldoveanu-hiking",
+    "name": "Moldoveanu Trail – Cârtisoara Hiking",
+    "gpxFile": "assets/gpx/moldoveanu.gpx",
+    "distanceKm": 24.8,
+    "elevationGainM": 1250,
+    "elevationLossM": 1180,
+    "difficulty": "Dificil",
+    "durationEstimate": "7–9 ore",
+    "description": "Traseu de hiking în zona Moldoveanu cu puncte de observatie spectaculoase. Track-ul conține peste 57.000 de puncte GPS colectate cu acuratete de secundă. Ruta traversează terene montane cu elevatii variind de la ~2030m la ~2150m+. Incluze: cabane de cazare, popasuri strategice, si obiective turistice.",
+    "coverImage": "assets/images/placeholders/stage_placeholder.png",
+    "pois": [
+      {
+        "id": "poi-moldoveanu-01",
+        "stageId": "moldoveanu-hiking",
+        "type": "cazare",
+        "name": "Cabana Moldoveanu",
+        "lat": 45.60447,
+        "lon": 24.61874,
+        "description": "Cabană de montană la ~2033m elevatia, punct de plecare ideal pentru hiking. Echipamente: pat, caldura, apa.",
+        "photos": []
+      },
+      {
+        "id": "poi-moldoveanu-02",
+        "stageId": "moldoveanu-hiking",
+        "type": "obiectiv",
+        "name": "Vârful Moldoveanu",
+        "lat": 45.6045,
+        "lon": 24.6189,
+        "description": "Cel mai înalt vârf din România (2544m). Vederile sunt spectaculoase în zile cu cer senin. Point de referință GPS: aproximativ la jumătatea traseului.",
+        "photos": []
+      },
+      {
+        "id": "poi-moldoveanu-03",
+        "stageId": "moldoveanu-hiking",
+        "type": "popas",
+        "name": "Loc de Popas Panorama",
+        "lat": 45.6046,
+        "lon": 24.6191,
+        "description": "Reclif sigur cu bancă si masă pentru odihnă. Punct excelent pentru fotografie.",
+        "photos": []
+      }
+    ]
+  }
+]
+
