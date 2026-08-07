@@ -269,16 +269,32 @@ Testers get an email invite from Firebase with a link to install (Android
 allows sideloading via the Firebase App Distribution tester app — no Play
 Store needed for internal testing).
 
-### iOS — TestFlight internal testers (instant, no App Store review)
+### iOS — TestFlight internal testers (requires paid Apple Developer Program)
+
+⚠️ **Blocked for now**: both TestFlight and Firebase App Distribution for iOS
+require a paid **Apple Developer Program membership ($99/year)** — this is
+an Apple platform requirement, not a project limitation (no free tier
+exists for either distribution channel). We currently only have a free
+"Apple Development" signing identity, which allows direct-to-device runs via
+Xcode/`flutter run` (cable or wireless, one device at a time, provisioning
+profile expires after 7 days) but **cannot** produce a link-shareable build
+for either TestFlight or Firebase App Distribution.
+
+**Current iOS testing method** (until the paid account is purchased):
+```bash
+flutter run -d <device-id> --release   # direct install over cable/wifi
+```
+
+**Once the paid Apple Developer Program is active**, the flow becomes:
 ```bash
 flutter build ipa
 # Xcode → Product → Archive → Distribute → TestFlight Internal Testing
 ```
 (Firebase App Distribution also supports iOS releases via
 `firebase appdistribution:distribute <path>.ipa --app <iOS_APP_ID> --groups
-testeri-interni`, using the same tester group — not wired into the Makefile
-yet since TestFlight is the primary iOS channel per the original plan; can
-be added as a `distribute-ios` target later if useful.)
+testeri-interni`, using the same tester group already created — not wired
+into the Makefile yet since TestFlight is the primary iOS channel per the
+original plan; can be added as a `distribute-ios` target later if useful.)
 
 ---
 
