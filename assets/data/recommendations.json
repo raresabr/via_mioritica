@@ -1,0 +1,44 @@
+[
+  {
+    "id": "rec-echipament-1",
+    "category": "echipament",
+    "title": "Echipament de bază",
+    "body": "Purtați încălțăminte de trekking cu talpă aderentă, îmbrăcăminte pe straturi (layering) și luați o jachetă impermeabilă chiar și pe vreme senină — vremea la munte se schimbă rapid."
+  },
+  {
+    "id": "rec-echipament-2",
+    "category": "echipament",
+    "title": "Bastoane de trekking",
+    "body": "Recomandate pe porțiunile cu urcare/coborâre abruptă — reduc semnificativ oboseala genunchilor."
+  },
+  {
+    "id": "rec-siguranta-1",
+    "category": "siguranta",
+    "title": "Spuneți cuiva traseul",
+    "body": "Înainte de a porni, anunțați o persoană de încredere ce etapă parcurgeți și ora estimată de sosire."
+  },
+  {
+    "id": "rec-siguranta-2",
+    "category": "siguranta",
+    "title": "Verificați semnalul GPS/telefon",
+    "body": "În zonele montane semnalul de telefon poate lipsi. Descărcați harta offline a etapei înainte de plecare (secțiunea Hartă din fiecare etapă)."
+  },
+  {
+    "id": "rec-apa-1",
+    "category": "apa",
+    "title": "Rezervă de apă",
+    "body": "Luați minimum 1,5–2 litri de apă per persoană pentru etapele de o zi; sursele de apă naturale de pe traseu nu sunt garantat potabile fără tratare."
+  },
+  {
+    "id": "rec-vreme-1",
+    "category": "vreme",
+    "title": "Verificați prognoza meteo",
+    "body": "Consultați prognoza meteo montană cu 24-48h înainte de start și evitați plecarea în condiții de furtună sau ceață densă anunțată."
+  },
+  {
+    "id": "rec-general-1",
+    "category": "general",
+    "title": "Respectați natura",
+    "body": "Nu lăsați deșeuri pe traseu și respectați fauna și flora locală — luați cu voi tot ce ați adus."
+  }
+]
