@@ -298,6 +298,23 @@ original plan; can be added as a `distribute-ios` target later if useful.)
 
 ---
 
+## Android SDK versions (Faza 12, explicit decision)
+
+`android/app/build.gradle.kts` no longer relies on Flutter's implicit
+`flutter.minSdkVersion`/`flutter.targetSdkVersion` defaults — the values are
+now hard-coded and documented, so a future Flutter upgrade can't silently
+change device compatibility:
+
+- **`compileSdk = 37`** — required by `permission_handler_android` (declares
+  `compileSdk 37`); the highest requirement among current dependencies.
+- **`minSdk = 24`** (Android 7.0) — required by `permission_handler_android`
+  and `url_launcher_android` (both declare `minSdk 24`); matches Flutter's
+  own current default, covers >98% of active Android devices (2026).
+- **`targetSdk = 36`** — latest stable Android version supported by Flutter
+  at the time of this decision; required by Google Play for new apps/updates.
+
+---
+
 ## Tech stack
 | Concern | Package |
 |---|---|

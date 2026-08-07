@@ -6,6 +6,7 @@ plugins {
 
 android {
     namespace = "ro.viamioritica.via_mioritica"
+    // compileSdk 37 required by `permission_handler_android` (declares compileSdk 37).
     compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
@@ -15,12 +16,17 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "ro.viamioritica.via_mioritica"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        // Faza 12 — decizie explicită (nu mai lăsăm valorile implicite din Flutter):
+        // minSdk 24 (Android 7.0) este cerut de `permission_handler_android` și
+        // `url_launcher_android` (ambele declară minSdk 24); coincide și cu
+        // valoarea implicită curentă din Flutter, dar o fixăm explicit ca să nu
+        // regreseze silențios la un upgrade viitor de Flutter. Acoperă >98% din
+        // device-urile Android active (2026) — acceptabil pentru un public general.
+        minSdk = 24
+        // targetSdk 36 — ultima versiune stabilă Android suportată de Flutter la
+        // data acestei decizii; cerință Google Play pentru aplicații noi/update-uri.
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
