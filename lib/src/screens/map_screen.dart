@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart';
 import '../models/stage_model.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
+import '../widgets/segment_badge.dart';
 import '../widgets/trail_map.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
@@ -68,8 +69,17 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.stage.name,
-            maxLines: 1, overflow: TextOverflow.ellipsis),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SegmentBadge(order: widget.stage.order, size: 20),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(widget.stage.name,
+                  maxLines: 1, overflow: TextOverflow.ellipsis),
+            ),
+          ],
+        ),
         backgroundColor: AppColors.green,
         foregroundColor: Colors.white,
       ),

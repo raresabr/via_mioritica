@@ -8,6 +8,7 @@ import '../providers/providers.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
 import '../utils/map_config.dart';
+import '../widgets/segment_badge.dart';
 
 /// Shows the whole trail — all stages/segments at once, each in its own
 /// color — with a legend to identify them. Distinct from the per-stage
@@ -82,6 +83,23 @@ class FullTrailMapScreen extends ConsumerWidget {
                     ),
               ],
             ),
+            // Faza 19: colorblind-safe shortCode marker at each segment's
+            // midpoint — lets a segment be identified directly on the map
+            // (not just via the legend below) without relying on color.
+            MarkerLayer(
+              markers: [
+                for (final stage in stages)
+                  if ((tracks[stage.id] ?? []).isNotEmpty)
+                    Marker(
+                      point: _midPoint(
+                        (tracks[stage.id] as List).cast<LatLng>(),
+                      ),
+                      width: 22,
+                      height: 22,
+                      child: SegmentBadge(order: stage.order, size: 22),
+                    ),
+              ],
+            ),
           ],
         ),
         Positioned(
@@ -92,6 +110,10 @@ class FullTrailMapScreen extends ConsumerWidget {
         ),
       ],
     );
+  }
+
+  LatLng _midPoint(List<LatLng> pts) {
+    return pts[pts.length ~/ 2];
   }
 }
 
@@ -125,14 +147,7 @@ class _Legend extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: AppColors.colorForStageOrder(stage.order),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
+                      SegmentBadge(order: stage.order, size: 16),
                       const SizedBox(width: 4),
                       Text(
                         stage.name,

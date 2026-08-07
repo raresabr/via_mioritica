@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/stage_model.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
+import 'segment_badge.dart';
 
 class StageCard extends StatelessWidget {
   final StageModel stage;
@@ -65,6 +66,14 @@ class StageCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                ),
+                // Faza 19: colorblind-safe segment shortCode badge,
+                // paired with the color strip above (top-left, out of the
+                // way of the "completed" checkmark badge on top-right).
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: SegmentBadge(order: stage.order, size: 24),
                 ),
                 if (isCompleted)
                   Positioned(

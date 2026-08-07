@@ -586,8 +586,29 @@ alternating **#870203** (dark red) / **#000000** (black) based on
 
 Both palette colors are dark, so they read clearly as accents on light card/
 map backgrounds. Note: distinguishing red vs. black by color alone isn't
-colorblind-safe — a text label/shortCode per segment (Faza 19) is planned to
-address this; not yet implemented.
+colorblind-safe — see Faza 19 below, which addresses this.
+
+---
+
+## Colorblind-safe segment labels (Faza 19)
+
+`SegmentBadge` (`lib/src/widgets/segment_badge.dart`) — a small colored
+circle with the segment's short text code (`E1`, `E2`, `E3`, ... — `E` for
+"Etapa") inside it, from `AppColors.shortCodeForStageOrder(order)`. Reuses
+the exact same deterministic `order` used by `colorForStageOrder`, so the
+code and the color always agree. Replaces every place a segment's color
+was previously shown **without** any accompanying text/shape, so users who
+can't reliably tell #870203 (dark red) apart from #000000 (black) by hue
+alone can still identify a segment:
+
+- **`FullTrailMapScreen`** — legend swatches now show the badge (color +
+  code) instead of a plain color dot; a badge marker is also placed at
+  each polyline's midpoint directly on the map itself, so segments are
+  identifiable without needing to cross-reference the legend below.
+- **`StageCard`** — a badge in the top-left corner of the cover image
+  (paired with the existing color accent stripe), on the stage list.
+- **`StageDetailScreen`** / **`MapScreen`** — a badge next to the stage
+  name in the app bar title.
 
 ---
 
@@ -620,4 +641,5 @@ address this; not yet implemented.
 - **Phase 16** ✅ Crashlytics + Analytics (crash reporting + anonymous
   usage events — see below)
 - **Phase 18** ✅ Privacy policy screen (see below)
+- **Phase 19** ✅ Colorblind-safe segment shortCode badges (see below)
 

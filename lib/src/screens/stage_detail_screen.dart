@@ -9,6 +9,7 @@ import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
 import '../widgets/offline_download_card.dart';
 import '../widgets/poi_card.dart';
+import '../widgets/segment_badge.dart';
 import '../widgets/trail_map.dart';
 import 'map_screen.dart';
 
@@ -32,11 +33,20 @@ class StageDetailScreen extends ConsumerWidget {
             pinned: true,
             backgroundColor: AppColors.green,
             foregroundColor: Colors.white,
-            title: Text(
-              stage.name,
-              style: const TextStyle(fontSize: 14),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            title: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SegmentBadge(order: stage.order, size: 20),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    stage.name,
+                    style: const TextStyle(fontSize: 14),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
             flexibleSpace: FlexibleSpaceBar(
               background: GestureDetector(

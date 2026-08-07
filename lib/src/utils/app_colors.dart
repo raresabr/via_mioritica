@@ -23,5 +23,12 @@ class AppColors {
   /// how stages.json is reordered.
   static Color colorForStageOrder(int order) =>
       segmentPalette[order % segmentPalette.length];
+
+  /// Deterministic, colorblind-safe short text label per segment (Faza
+  /// 19), e.g. `E1`, `E2`, ... — used everywhere `colorForStageOrder` is
+  /// used, so segments stay distinguishable even for users who can't
+  /// reliably tell #870203 (dark red) apart from #000000 (black) by hue
+  /// alone. `E` = "Etapa" (Romanian for "Stage").
+  static String shortCodeForStageOrder(int order) => 'E${order + 1}';
 }
 
