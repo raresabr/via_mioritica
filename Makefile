@@ -13,10 +13,23 @@ APK_PATH         := build/app/outputs/flutter-apk/app-release.apk
 # `make distribute-android NOTES="text here"`.
 NOTES ?= $(shell git log -1 --pretty=%B | head -1)
 
-.PHONY: build-android distribute-android release-android clean-build
+.PHONY: bump-build build-android distribute-android release-android clean-build
 
-## Build the release APK.
-build-android:
+## Auto-increments the build number (the `+N` after the version name) in
+## pubspec.yaml, e.g. 1.0.0+2 -> 1.0.0+3, so every release shows up as a
+## new, distinct build in Firebase App Distribution without having to
+## remember to bump it by hand. The version *name* (1.0.0) is untouched —
+## bump that manually in pubspec.yaml only for real version bumps.
+bump-build:
+	@current=$$(grep '^version:' pubspec.yaml | sed -E 's/^version: [0-9]+\.[0-9]+\.[0-9]+\+([0-9]+)$$/\1/'); \
+	name=$$(grep '^version:' pubspec.yaml | sed -E 's/^version: ([0-9]+\.[0-9]+\.[0-9]+)\+[0-9]+$$/\1/'); \
+	next=$$((current + 1)); \
+	sed -i '' -E "s/^version: .+/version: $${name}+$${next}/" pubspec.yaml; \
+	echo "Bumped build number: $${name}+$${current} -> $${name}+$${next}"
+
+## Build the release APK. Always bumps the build number first (see
+## `bump-build`), so re-running this produces a new build number each time.
+build-android: bump-build
 	flutter build apk --release
 
 ## Upload the already-built release APK to the Firebase App Distribution
@@ -28,7 +41,8 @@ distribute-android:
 		--release-notes "$(NOTES)" \
 		--project $(FIREBASE_PROJECT)
 
-## Full repeatable release flow: build, then distribute, in one command.
+## Full repeatable release flow: build (with auto-bumped build number),
+## then distribute, in one command.
 ## Usage: make release-android NOTES="Fixed the map loading bug"
 release-android: build-android distribute-android
 

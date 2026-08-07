@@ -16,6 +16,29 @@ Built with **Flutter 3.x** — single codebase for iOS + Android.
 
 ---
 
+## Quick commands (most used, day-to-day)
+
+```bash
+# Run a debug/release build directly on a connected iPhone (cable). Find
+# the device id first with `flutter devices`.
+flutter run -d 00008110-001E1DE80CBA801E --release
+
+# Build a fresh Android release APK (auto-bumps the build number in
+# pubspec.yaml, e.g. 1.0.0+2 -> 1.0.0+3, so each build is distinct).
+make build-android
+
+# Upload the already-built APK to Firebase App Distribution, "Testeri
+# Interni" group.
+make distribute-android
+
+# Both of the above in one go, with custom release notes:
+make release-android NOTES="Fixed the map loading bug"
+```
+See "Internal testing distribution" below for full setup details and the
+iOS/TestFlight equivalent.
+
+---
+
 ## Project structure
 
 ```
@@ -266,6 +289,14 @@ make distribute-android
 # message, or pass your own):
 make release-android NOTES="Fixed the map loading bug"
 ```
+`make build-android` (and therefore `make release-android`) always runs
+`make bump-build` first, which auto-increments the build number (the `+N`
+after the version name) in `pubspec.yaml` — e.g. `1.0.0+2` → `1.0.0+3` →
+`1.0.0+4` — so every release shows up as a distinct, incrementing build in
+Firebase App Distribution without having to remember to bump it by hand.
+The version *name* (`1.0.0`) is untouched by this — bump that manually in
+`pubspec.yaml` only for real version changes.
+
 Testers get an email invite from Firebase with a link to install (Android
 allows sideloading via the Firebase App Distribution tester app — no Play
 Store needed for internal testing).
