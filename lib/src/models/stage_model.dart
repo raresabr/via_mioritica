@@ -1,4 +1,5 @@
 // lib/src/models/stage_model.dart
+import '../utils/json_utils.dart';
 import 'poi_model.dart';
 
 /// A stage (a.k.a. "segment" in the V2 5-tab navigation/content model) of
@@ -53,7 +54,7 @@ class StageModel {
           json['coverImage'] as String? ??
           'assets/images/placeholders/stage_placeholder.webp',
       pois: poisJson
-          .map((p) => PoiModel.fromJson(p as Map<String, dynamic>))
+          .map((p) => PoiModel.fromJson(asStringKeyedMap(p)))
           .toList(),
       order: (json['order'] as num?)?.toInt() ?? fallbackOrder,
     );

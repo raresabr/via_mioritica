@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import '../services/content_cache_box.dart';
 import 'content_config.dart';
 
+export 'json_utils.dart' show asStringKeyedMap;
+
 /// Faza 13/17 — cache-first content loading with a real hosted JSON source.
 ///
 /// Read path for [load]:
@@ -98,11 +100,3 @@ class CacheFirstLoader {
   static Future<void> invalidate(String cacheKey) =>
       ContentCacheBox.instance.delete(cacheKey);
 }
-
-/// Hive round-trips JSON maps as a `Map` with dynamic keys (not
-/// `Map<String, dynamic>`), so every repository must re-cast nested maps
-/// before passing them to a model's `fromJson`. Works whether [v] came
-/// straight from `dart:convert`'s `json.decode` (already `Map<String,
-/// dynamic>`) or from the Hive cache.
-Map<String, dynamic> asStringKeyedMap(dynamic v) =>
-    Map<String, dynamic>.from(v as Map);

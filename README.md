@@ -193,6 +193,34 @@ extra UI plumbing was needed.
 API-hosted variant is planned, per "Explicitly out of scope"), so
 `LocalGpxRepository` keeps its simple in-memory cache only.
 
+### Bugfix: nested POI maps from Hive cache (post-Faza 17)
+
+**Symptom**: "Hartă traseu" tab showed "Eroare la încărcarea datelor."
+whenever `stagesProvider` read stage data back from the Hive cache (i.e.
+any launch after the first, cache-HIT path).
+
+**Root cause**: Hive round-trips JSON as `Map<dynamic, dynamic>`, not
+`Map<String, dynamic>`. `LocalJsonStageRepository` already re-cast the
+*top-level* stage map via `asStringKeyedMap()` before calling
+`StageModel.fromJson`, but `StageModel.fromJson` itself cast each **nested**
+`pois` list entry with a raw `p as Map<String, dynamic>` — which throws a
+`type '_Map<dynamic, dynamic>' is not a subtype of type 'Map<String,
+dynamic>'` cast error for any stage with non-empty `pois` once that data
+came back through Hive instead of straight from `json.decode`.
+
+**Fix**: moved the `asStringKeyedMap()` helper out of
+`cache_first_loader.dart` into a neutral `lib/src/utils/json_utils.dart`
+(still re-exported from `cache_first_loader.dart` for existing callers), and
+made `StageModel.fromJson` call it on every nested POI map too, not just
+the outer stage map. General lesson: any model with nested
+maps/lists-of-maps must apply this re-cast recursively at **every** level,
+not just the top one, whenever it might be hydrated from the Hive cache.
+
+Verified: reproduced on the Android emulator (cleared app data, confirmed
+crash with a temporary debug print of the exact exception/stack trace),
+applied the fix, cleared app data again, and confirmed the "Hartă traseu"
+tab now renders all 3 stage polylines + legend correctly with no error.
+
 ---
 
 ## Secrets policy
