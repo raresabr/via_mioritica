@@ -38,70 +38,79 @@ class AboutScreen extends ConsumerWidget {
             ],
           ),
         ),
-        data: (about) => SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.asset(
+        data: (about) => CustomScrollView(
+          slivers: [
+            // UI/UX polish: hero image edge-to-edge (no padding), flush
+            // against the AppBar — previously wrapped in the same
+            // padded SingleChildScrollView as the rest of the content,
+            // leaving a visible margin on every side including the top.
+            SliverToBoxAdapter(
+              child: Image.asset(
                 'assets/images/main.jpg',
-                height: 180,
+                height: 200,
                 width: double.infinity,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
-                  height: 180,
+                  height: 200,
                   color: AppColors.green,
                   child: const Center(
                     child: Icon(Icons.terrain, size: 56, color: Colors.white),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Text(
-                about.title.isNotEmpty ? about.title : S.appName,
-                style: const TextStyle(
-                    fontSize: 22, fontWeight: FontWeight.bold,
-                    color: AppColors.green),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                about.body.isNotEmpty ? about.body : S.contentInProgress,
-                style: const TextStyle(
-                    fontSize: 14, height: 1.6, color: AppColors.textDark),
-              ),
-              const SizedBox(height: 16),
-              Center(
-                child: TextButton.icon(
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const PrivacyPolicyScreen(),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.all(20),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  const SizedBox(height: 20),
+                  Text(
+                    about.title.isNotEmpty ? about.title : S.appName,
+                    style: const TextStyle(
+                        fontSize: 22, fontWeight: FontWeight.bold,
+                        color: AppColors.green),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    about.body.isNotEmpty ? about.body : S.contentInProgress,
+                    style: const TextStyle(
+                        fontSize: 14, height: 1.6, color: AppColors.textDark),
+                  ),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: TextButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const PrivacyPolicyScreen(),
+                        ),
+                      ),
+                      icon: const Icon(Icons.privacy_tip_outlined,
+                          size: 18, color: AppColors.textMuted),
+                      label: const Text(
+                        S.privacyPolicyLinkLabel,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textMuted,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
                     ),
                   ),
-                  icon: const Icon(Icons.privacy_tip_outlined,
-                      size: 18, color: AppColors.textMuted),
-                  label: const Text(
-                    S.privacyPolicyLinkLabel,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.textMuted,
-                      decoration: TextDecoration.underline,
+                  Center(
+                    child: BrandFooter(
+                      text: about.footerText.isNotEmpty
+                          ? about.footerText
+                          : S.aboutFooterFallback,
+                      url: about.footerUrl.isNotEmpty
+                          ? about.footerUrl
+                          : 'https://stag-line.com/',
                     ),
                   ),
-                ),
+                ]),
               ),
-              Center(
-                child: BrandFooter(
-                  text: about.footerText.isNotEmpty
-                      ? about.footerText
-                      : S.aboutFooterFallback,
-                  url: about.footerUrl.isNotEmpty
-                      ? about.footerUrl
-                      : 'https://stag-line.com/',
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -31,24 +31,27 @@ class BrandFooter extends StatelessWidget {
       onTap: _openLink,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // UI/UX polish: Stagline deer-head logo instead of a generic
-            // link icon. The source SVG has a broken `fill="#"` on every
-            // path (invalid hex), so a fixed `colorFilter` is applied to
-            // override it — this ignores the embedded (broken) fill
-            // entirely and guarantees a consistent brand color regardless.
+            // UI/UX polish: Stagline deer-head logo — enlarged (was
+            // 16x16, hard to see) and rendered fully black. The source
+            // SVG has a broken `fill="#"` on every path (invalid hex),
+            // so a fixed `colorFilter` is applied to override it — this
+            // ignores the embedded (broken) fill entirely and guarantees
+            // a consistent brand color regardless. Stacked as its own
+            // row above the text (rather than side-by-side) so the logo
+            // can be large without cramping the text on one line.
             SvgPicture.asset(
               'assets/images/stagline-logo.svg',
-              width: 16,
-              height: 16,
+              width: 48,
+              height: 48,
               colorFilter: const ColorFilter.mode(
-                AppColors.textMuted,
+                Colors.black,
                 BlendMode.srcIn,
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(height: 6),
             Text(
               text,
               style: const TextStyle(
