@@ -1,14 +1,14 @@
 [
   {
-    "id": "bike",
-    "name": "Cluj-Napoca Gravel/Unpaved Cycling",
-    "gpxFile": "assets/gpx/bike.gpx",
-    "distanceKm": 45.0,
-    "elevationGainM": 720,
-    "elevationLossM": 690,
-    "difficulty": "Mediu",
-    "durationEstimate": "3–5 ore",
-    "description": "Traseu de ciclism gravel pornind din Cluj-Napoca, cu porțiuni de drum neasfaltat prin zonele periurbane și păduri. Ideal pentru mountain bike și gravel bike. Înregistrat cu Garmin Connect pe 26 iulie 2026.",
+    "id": "negoiu-hiking",
+    "name": "Negoiu Trail – Cârtisoara Hiking",
+    "gpxFile": "assets/gpx/negoiu.gpx",
+    "distanceKm": 17.6,
+    "elevationGainM": 2185,
+    "elevationLossM": 2180,
+    "difficulty": "Dificil",
+    "durationEstimate": "10–12 ore",
+    "description": "Traseu de hiking spre Vârful Negoiu, al doilea cel mai înalt vârf din România, pornind din zona Cârtisoara. Ruta traversează terene montane cu elevatii variind de la ~2036m la ~2527m. Înregistrat cu Garmin Connect pe 6 iulie 2024.",
     "coverImage": "assets/images/placeholders/stage_placeholder.png",
     "pois": []
   },

@@ -86,7 +86,7 @@ flutter:
     - assets/data/recommendations.json
     - assets/data/photos.json
     - assets/data/about.json
-    - assets/gpx/bike.gpx
+    - assets/gpx/negoiu.gpx
     - assets/gpx/transfagarasan.gpx
     - assets/gpx/moldoveanu.gpx
     - assets/images/main.jpg
