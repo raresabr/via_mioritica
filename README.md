@@ -31,7 +31,7 @@ via_mioritica/
 │       ├── repositories/         ← abstract *Repository interfaces + LocalJson*/LocalGpx implementations (API-ready — see below)
 │       ├── providers/            ← Riverpod providers (data layer + offline map state)
 │       ├── screens/              ← RootNavScreen (5-tab nav), AboutScreen, FullTrailMapScreen, RecommendationsScreen, StagesListScreen/StageDetailScreen/MapScreen, PhotoGalleryScreen
-│       ├── widgets/               ← TrailMap, ElevationChart, StageCard, PoiCard, OfflineDownloadCard, BrandFooter
+│       ├── widgets/               ← TrailMap, StageCard, PoiCard, OfflineDownloadCard, BrandFooter
 │       └── utils/                ← AppTheme, AppColors, AppStrings, MapConfig
 ├── android/                      ← Android-specific config (compileSdk=37)
 ├── ios/                          ← iOS-specific config (NSLocationWhenInUse set)
@@ -133,7 +133,8 @@ GpxRepository (interface)    →  LocalGpxRepository (parses GPX assets)
 RecommendationRepository     →  LocalJsonRecommendationRepository (assets/data/recommendations.json)
 PhotoRepository              →  LocalJsonPhotoRepository (assets/data/photos.json)
 AboutRepository              →  LocalJsonAboutRepository (assets/data/about.json)
-ProgressRepository (stub)    →  no implementation yet (Faza 15 builds the real local one)
+ProgressRepository (stub)    →  no implementation yet (account-backed sync, not built)
+LocalProgressRepository      →  HiveProgressRepository (Faza 15, local-only, no account)
 ```
 
 Riverpod providers in `providers.dart` are typed against the **interface**
@@ -403,6 +404,31 @@ force-update triggers should go through the Console, not that file.
 
 ---
 
+## Local progress tracking (Faza 15)
+
+Checkbox-per-stage + overall % completion, **local only, no account/login**
+(consistent with "Explicitly out of scope for MVP" — see plan.md).
+
+- `LocalProgressRepository` (interface, `lib/src/repositories/`) +
+  `HiveProgressRepository` (implementation) — deliberately a **separate**
+  abstraction from the account-based `ProgressRepository` stub (which keeps
+  modeling a possible *future* API-backed sync via `userId`/
+  `UserProgressModel`); this one has no user concept at all, just a set of
+  completed stage IDs persisted in their own Hive box (`ProgressBox`,
+  `user_progress` — kept apart from `ContentCacheBox` so clearing cached
+  content can never wipe a user's actual hiking progress).
+- `progress_providers.dart` — `ProgressController` (`StateNotifier<Set<String>>`)
+  + `progressProvider`, so every screen watching it (list badge/%, detail
+  checkbox) updates instantly on toggle.
+- `StageDetailScreen` — "Marchează etapa ca finalizată" checkbox tile.
+- `StageCard` — green checkmark badge on the cover image when a stage is
+  completed.
+- `StagesListScreen` — progress banner at the top ("X/Y etape finalizate",
+  percentage + progress bar), computed live from `stagesProvider` ×
+  `progressProvider`.
+
+---
+
 ## Tech stack
 | Concern | Package |
 |---|---|
@@ -410,7 +436,6 @@ force-update triggers should go through the Console, not that file.
 | Offline map caching | `flutter_map_tile_caching` (FMTC, GPL-v3 — see License above) |
 | GPS | `geolocator` + `permission_handler` |
 | GPX parsing | `gpx` |
-| Elevation chart | `fl_chart` |
 | State management | `flutter_riverpod` |
 | Env vars | `flutter_dotenv` |
 | Coordinates | `latlong2` |
@@ -502,7 +527,8 @@ address this; not yet implemented.
 - **Phase 1** 🔄 Content structuring (add real GPX + JSON)
 - **Phase 2** ✅ Offline map download (FMTC corridor caching)
 - **Phase 3** ✅ GPS blue-dot (foreground, geolocator wired up)
-- **Phase 4** ✅ Trail guide UI (stages, POIs, elevation chart, map)
+- **Phase 4** ✅ Trail guide UI (stages, POIs, map) — elevation chart
+  removed post-launch (buggy axis-label rendering, not a core feature)
 - **Phase 5** ⬜ Polish + internal testing release
 - **Phase 6** ⬜ Public store launch (later)
 - **Phase 7** ✅ Repository interfaces + new content models (API-readiness)
@@ -520,4 +546,6 @@ address this; not yet implemented.
 - **Phase 12** ✅ Explicit Android `minSdk`/`targetSdk`/`compileSdk` decision
   (see "Android SDK versions" above)
 - **Phase 14** ✅ Force-update via Firebase Remote Config (see below)
+- **Phase 15** ✅ Local progress tracking (checkbox per stage + overall %,
+  no account — see below)
 

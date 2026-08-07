@@ -7,8 +7,14 @@ import '../utils/app_strings.dart';
 class StageCard extends StatelessWidget {
   final StageModel stage;
   final VoidCallback onTap;
+  final bool isCompleted;
 
-  const StageCard({super.key, required this.stage, required this.onTap});
+  const StageCard({
+    super.key,
+    required this.stage,
+    required this.onTap,
+    this.isCompleted = false,
+  });
 
   Color _difficultyColor() {
     switch (stage.difficulty.toLowerCase()) {
@@ -43,19 +49,38 @@ class StageCard extends StatelessWidget {
               color: AppColors.colorForStageOrder(stage.order),
             ),
             // Cover image
-            SizedBox(
-              height: 140,
-              width: double.infinity,
-                child: Image.asset(
-                stage.coverImage,
-                fit: BoxFit.cover,
-                errorBuilder: (ctx, err, _) => Container(
-                  color: Colors.grey.shade200,
-                  child: Center(
-                    child: Icon(Icons.landscape, size: 48, color: Colors.grey.shade400),
+            Stack(
+              children: [
+                SizedBox(
+                  height: 140,
+                  width: double.infinity,
+                  child: Image.asset(
+                    stage.coverImage,
+                    fit: BoxFit.cover,
+                    errorBuilder: (ctx, err, _) => Container(
+                      color: Colors.grey.shade200,
+                      child: Center(
+                        child: Icon(Icons.landscape,
+                            size: 48, color: Colors.grey.shade400),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                if (isCompleted)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppColors.green,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.check,
+                          size: 16, color: Colors.white),
+                    ),
+                  ),
+              ],
             ),
             Padding(
               padding: const EdgeInsets.all(12),

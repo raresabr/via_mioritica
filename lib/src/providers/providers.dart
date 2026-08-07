@@ -63,14 +63,6 @@ final trackPointsProvider =
   return ref.read(gpxRepositoryProvider).getTrackPoints(gpxAssetPath);
 });
 
-// ── Elevation profile per stage ───────────────────────────────────────────────
-
-final elevationProfileProvider =
-    FutureProvider.family<List<(double, double)>, String>(
-        (ref, gpxAssetPath) async {
-  return ref.read(gpxRepositoryProvider).getElevationProfile(gpxAssetPath);
-});
-
 // ── Recommendations (Faza 8.5 "Recomandări practice") ────────────────────────
 
 final recommendationsProvider = FutureProvider<List<RecommendationModel>>((

@@ -30,9 +30,6 @@ class S {
   static const sectionPopas = 'Popas';
   static const sectionObiective = 'Obiective turistice';
   static const sectionRecomandari = 'Recomandări';
-  static const sectionElevation = 'Profil altitudinal';
-  static const elevationAxisKm = 'km';
-  static const elevationAxisM = 'm';
   static const noPois = 'Nu sunt puncte de interes pentru această categorie.';
 
   // Map
@@ -107,5 +104,10 @@ class S {
   static const forceUpdateButton = 'Actualizează acum';
   static const forceUpdateStoreError =
       'Nu s-a putut deschide magazinul de aplicații.';
+
+  // Progress tracking (Faza 15 — local, no account)
+  static const progressMarkCompleted = 'Marchează etapa ca finalizată';
+  static const progressCompletedLabel = 'Etapă finalizată';
+  static const progressSummary = 'etape finalizate';
 }
 

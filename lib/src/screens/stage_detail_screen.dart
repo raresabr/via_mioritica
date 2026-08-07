@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/stage_model.dart';
 import '../models/poi_model.dart';
-import '../providers/providers.dart';
+import '../providers/progress_providers.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
-import '../widgets/elevation_chart.dart';
 import '../widgets/offline_download_card.dart';
 import '../widgets/poi_card.dart';
 import '../widgets/trail_map.dart';
@@ -19,7 +18,9 @@ class StageDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final elevAsync = ref.watch(elevationProfileProvider(stage.gpxFile));
+    final isCompleted = ref.watch(
+      progressProvider.select((ids) => ids.contains(stage.id)),
+    );
 
     return Scaffold(
       body: CustomScrollView(
@@ -92,6 +93,15 @@ class StageDetailScreen extends ConsumerWidget {
                 children: [
                   // Technical stats row
                   _StatsRow(stage: stage),
+                  const SizedBox(height: 16),
+
+                  // Progress tracking (Faza 15 — local, no account)
+                  _CompletedToggle(
+                    isCompleted: isCompleted,
+                    onChanged: (value) => ref
+                        .read(progressProvider.notifier)
+                        .setCompleted(stage.id, value),
+                  ),
                   const SizedBox(height: 20),
 
                   // Offline map download
@@ -110,20 +120,6 @@ class StageDetailScreen extends ConsumerWidget {
                         : S.contentInProgress,
                     style: const TextStyle(
                         fontSize: 14, height: 1.6, color: AppColors.textDark),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Elevation profile
-                  _SectionTitle(S.sectionElevation),
-                  const SizedBox(height: 8),
-                  elevAsync.when(
-                    loading: () => const SizedBox(
-                        height: 160,
-                        child: Center(child: CircularProgressIndicator())),
-                    error: (_, err) => const SizedBox(
-                        height: 80,
-                        child: Center(child: Text(S.errorGpx))),
-                    data: (profile) => ElevationChart(profile: profile),
                   ),
                   const SizedBox(height: 24),
 
@@ -189,6 +185,60 @@ class _SectionTitle extends StatelessWidget {
         fontSize: 16,
         fontWeight: FontWeight.bold,
         color: AppColors.green,
+      ),
+    );
+  }
+}
+
+/// Faza 15 — checkbox to mark a stage as personally completed. Purely
+/// local (no account), backed by [progressProvider]/`HiveProgressRepository`.
+class _CompletedToggle extends StatelessWidget {
+  final bool isCompleted;
+  final ValueChanged<bool> onChanged;
+
+  const _CompletedToggle({
+    required this.isCompleted,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: isCompleted
+          ? AppColors.green.withValues(alpha: 0.1)
+          : AppColors.textMuted.withValues(alpha: 0.06),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => onChanged(!isCompleted),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          child: Row(
+            children: [
+              Checkbox(
+                value: isCompleted,
+                activeColor: AppColors.green,
+                onChanged: (value) => onChanged(value ?? false),
+              ),
+              Expanded(
+                child: Text(
+                  isCompleted
+                      ? S.progressCompletedLabel
+                      : S.progressMarkCompleted,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: isCompleted
+                        ? AppColors.green
+                        : AppColors.textDark,
+                  ),
+                ),
+              ),
+              if (isCompleted)
+                const Icon(Icons.check_circle, color: AppColors.green, size: 20),
+            ],
+          ),
+        ),
       ),
     );
   }

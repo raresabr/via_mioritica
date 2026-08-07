@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
 import 'src/screens/splash_screen.dart';
 import 'src/services/content_cache_box.dart';
+import 'src/services/progress_box.dart';
 import 'src/services/remote_config_service.dart';
 import 'src/utils/app_theme.dart';
 
@@ -41,6 +42,10 @@ Future<void> main() async {
   // Initialise the Hive content cache (Faza 13: cache-first content
   // loading — see lib/src/utils/cache_first_loader.dart).
   await ContentCacheBox.init();
+
+  // Initialise the Hive progress box (Faza 15: local-only "stage
+  // completed" tracking, no account required).
+  await ProgressBox.init();
 
   runApp(
     const ProviderScope(
