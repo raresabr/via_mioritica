@@ -16,7 +16,7 @@ class StagesListScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(S.appName),
+        title: const Text(S.navGhid),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12),

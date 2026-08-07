@@ -7,9 +7,12 @@ class S {
   // App
   static const appName = 'Via Mioritica';
 
-  // Navigation
-  static const navEtape = 'Etape';
-  static const navHarta = 'Hartă';
+  // Navigation (5-tab bottom nav, Faza 8)
+  static const navDespreNoi = 'Despre Noi';
+  static const navHartaTraseu = 'Hartă traseu';
+  static const navRecomandari = 'Recomandări';
+  static const navGhid = 'Ghidul Călătorului';
+  static const navAlbum = 'Album foto';
 
   // Stage list
   static const stageTitleHint = 'Traseu';
@@ -81,5 +84,22 @@ class S {
       'cabane autentice și trăiește România dintr-o perspectivă unică.';
   static const homeButtonSegmente = 'Segmente traseu';
   static const homeTagline = 'Descoperă România pas cu pas';
+
+  // Despre Noi
+  static const aboutFooterFallback = 'stag-line.com';
+
+  // Recomandări practice
+  static const recommendationsTitle = 'Recomandări practice';
+  static const recommendationsEmpty = 'Nu sunt recomandări disponibile.';
+
+  // Album foto
+  static const albumTitle = 'Album foto';
+  static const albumEmpty =
+      'Nu sunt poze disponibile încă — vor fi adăugate curând.';
+  static const albumFilterAll = 'Toate etapele';
+
+  // Hartă traseu (full route map)
+  static const fullMapTitle = 'Hartă traseu';
+  static const fullMapLegendTitle = 'Etape';
 }
 

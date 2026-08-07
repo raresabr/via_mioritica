@@ -95,3 +95,16 @@ final photosForStageProvider =
 final aboutContentProvider = FutureProvider<AboutContentModel>((ref) async {
   return ref.read(aboutRepositoryProvider).loadAboutContent();
 });
+
+// ── All stages' track points, for the full-route map (Faza 8.2) ──────────────
+
+final allStagesTrackPointsProvider =
+    FutureProvider<Map<String, List<dynamic>>>((ref) async {
+  final stages = await ref.watch(stagesProvider.future);
+  final gpxRepo = ref.read(gpxRepositoryProvider);
+  final result = <String, List<dynamic>>{};
+  for (final stage in stages) {
+    result[stage.id] = await gpxRepo.getTrackPoints(stage.gpxFile);
+  }
+  return result;
+});

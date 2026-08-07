@@ -30,8 +30,8 @@ via_mioritica/
 │       ├── models/               ← StageModel, PoiModel, RecommendationModel, PhotoModel, AboutContentModel, UserModel/UserProgressModel (stubs)
 │       ├── repositories/         ← abstract *Repository interfaces + LocalJson*/LocalGpx implementations (API-ready — see below)
 │       ├── providers/            ← Riverpod providers (data layer + offline map state)
-│       ├── screens/              ← StagesListScreen, StageDetailScreen, MapScreen
-│       ├── widgets/               ← TrailMap, ElevationChart, StageCard, PoiCard, OfflineDownloadCard
+│       ├── screens/              ← RootNavScreen (5-tab nav), AboutScreen, FullTrailMapScreen, RecommendationsScreen, StagesListScreen/StageDetailScreen/MapScreen, PhotoGalleryScreen
+│       ├── widgets/               ← TrailMap, ElevationChart, StageCard, PoiCard, OfflineDownloadCard, BrandFooter
 │       └── utils/                ← AppTheme, AppColors, AppStrings, MapConfig
 ├── android/                      ← Android-specific config (compileSdk=37)
 ├── ios/                          ← iOS-specific config (NSLocationWhenInUse set)
@@ -208,6 +208,32 @@ instead of gigabytes.
 
 ---
 
+## Navigation (Faza 8 — 5-tab bottom nav)
+
+`RootNavScreen` (`lib/src/screens/root_nav_screen.dart`) is the app's home
+after splash, with a `BottomNavigationBar` (`IndexedStack`, state preserved
+across tab switches) and 5 tabs, in this fixed order:
+
+1. **Despre Noi** (`AboutScreen`) — org content (placeholder for now) +
+   `BrandFooter` linking to https://stag-line.com/.
+2. **Hartă traseu** (`FullTrailMapScreen`) — the *entire* trail, all stages
+   rendered simultaneously as colored polylines (`AppColors.colorForStageOrder`)
+   with a tap-through legend. This is distinct from the per-stage map reached
+   from "Ghidul Călătorului", which shows one segment with offline
+   download + live GPS. The full-trail map uses plain online tiles (no FMTC
+   override) — offline caching stays scoped per-stage.
+3. **Recomandări practice** (`RecommendationsScreen`) — general hiking-safety
+   tips from `assets/data/recommendations.json`.
+4. **Ghidul Călătorului** (`StagesListScreen` → `StageDetailScreen` →
+   `MapScreen`) — the original stage list/detail/map flow, reused as-is.
+5. **Album foto** (`PhotoGalleryScreen`) — global photo gallery, filterable
+   by stage (currently empty, `assets/data/photos.json` has structure only).
+
+`home_screen.dart` was removed (superseded by `RootNavScreen`); the splash
+screen now navigates to `RootNavScreen`.
+
+---
+
 ## Phase roadmap
 - **Phase 0** ✅ Environment + project bootstrap
 - **Phase 1** 🔄 Content structuring (add real GPX + JSON)
@@ -217,3 +243,8 @@ instead of gigabytes.
 - **Phase 5** ⬜ Polish + internal testing release
 - **Phase 6** ⬜ Public store launch (later)
 - **Phase 7** ✅ Repository interfaces + new content models (API-readiness)
+- **Phase 8** ✅ 5-tab bottom navigation + full-trail map + branding footer
+  (Faza 10 branding incidentally completed alongside `BrandFooter`)
+- **Phase 9** ⬜ Segment colors (#870203/#000000 alternating) — placeholder
+  palette in place, swap pending
+
