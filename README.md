@@ -367,6 +367,40 @@ through CocoaPods instead. If Xcode's SPM dependency resolution is ever
 re-enabled, expect a "Couldn't get the list of tags" resolution failure in
 sandboxed/restricted-network environments; CocoaPods doesn't hit this.
 
+### Triggering a force-update (admin runbook, no code/CLI needed)
+
+The Firebase Console **is** the admin dashboard for this — no separate
+tool was built, since Remote Config already ships with one and nobody but
+the project owner needs access to it:
+
+1. Go to the [Remote Config
+   page](https://console.firebase.google.com/project/via-mioritica-app/config)
+   for the `via-mioritica-app` project (Google login with access required).
+2. Find the `min_supported_build_number` parameter → click the pencil
+   (edit) icon.
+3. Set its value to the **build number** of the release you want to force
+   everyone off of, or higher — the number after the `+` in `pubspec.yaml`'s
+   `version: x.y.z+<buildNumber>` (this is what becomes `versionCode` on
+   Android / `CFBundleVersion` on iOS at build time). E.g. if `1.2.0+7` has
+   the bug, set `min_supported_build_number` to `8` (or the build number of
+   the fixed release once it's out) so every install below that gets
+   blocked.
+4. (Optional) Edit `force_update_message` to explain the specific incident
+   to users.
+5. Click **Publish changes** (top right). Takes effect for any app
+   instance within ~15 minutes (`minimumFetchInterval` in
+   `RemoteConfigService`) — sooner for anyone who force-closes and
+   reopens the app.
+6. To roll back / stop forcing the update, set `min_supported_build_number`
+   back down to `1` (or any build number ≤ the lowest one still allowed)
+   and publish again.
+
+**No redeploy, no CLI, no new app release needed** — this is exactly what
+Remote Config is for. `remoteconfig.template.json` in the repo only seeds
+the *initial* defaults (useful for reproducing the project from scratch on
+a new machine via `firebase deploy --only remoteconfig`); day-to-day
+force-update triggers should go through the Console, not that file.
+
 ---
 
 ## Tech stack
