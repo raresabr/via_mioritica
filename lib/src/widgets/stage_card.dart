@@ -34,6 +34,14 @@ class StageCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Segment color accent (Faza 9) — same color used on the
+            // full-trail map & legend, so a stage is identifiable at a
+            // glance across both screens.
+            Container(
+              height: 4,
+              width: double.infinity,
+              color: AppColors.colorForStageOrder(stage.order),
+            ),
             // Cover image
             SizedBox(
               height: 140,

@@ -9,10 +9,14 @@ class AppColors {
   static const textDark = Color(0xFF1B1B1B);
   static const textMuted = Color(0xFF6B6B6B);
 
-  /// Placeholder per-segment palette used on the full-route map & legend
-  /// (Faza 8) until the final alternating brand colors (#870203/#000000)
-  /// are wired in (Faza 9) — see [colorForStageOrder].
-  static const List<Color> segmentPalette = [green, brown];
+  /// Alternating brand palette per segment/stage (Faza 9), in order:
+  /// #870203 (dark red) / #000000 (black). Both are dark enough for
+  /// white text on top (contrast) and dark enough to read as accents on
+  /// light backgrounds (cards, legend swatches).
+  static const List<Color> segmentPalette = [
+    Color(0xFF870203),
+    Color(0xFF000000),
+  ];
 
   /// Deterministic color for a stage/segment based on its `order` field
   /// (not array/JSON position), so coloring stays stable regardless of

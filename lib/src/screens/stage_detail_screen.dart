@@ -51,6 +51,7 @@ class StageDetailScreen extends ConsumerWidget {
                       gpxAssetPath: stage.gpxFile,
                       stageId: stage.id,
                       compact: true,
+                      segmentColor: AppColors.colorForStageOrder(stage.order),
                     ),
                     // Tap hint overlay
                     Positioned(

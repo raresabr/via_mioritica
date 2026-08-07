@@ -234,6 +234,26 @@ screen now navigates to `RootNavScreen`.
 
 ---
 
+## Segment colors (Faza 9)
+
+Each stage/segment gets a deterministic color from `AppColors.segmentPalette`,
+alternating **#870203** (dark red) / **#000000** (black) based on
+`stage.order` (`AppColors.colorForStageOrder(order)`), consistently across:
+
+- **Hartă traseu** (`FullTrailMapScreen`) — polyline per stage + legend
+  swatches.
+- **Ghidul Călătorului** — `StageCard` top accent stripe (stage list) and
+  the single-stage polyline in `TrailMap` (used by both `MapScreen` and the
+  compact preview in `StageDetailScreen`), via the new `TrailMap.segmentColor`
+  parameter.
+
+Both palette colors are dark, so they read clearly as accents on light card/
+map backgrounds. Note: distinguishing red vs. black by color alone isn't
+colorblind-safe — a text label/shortCode per segment (Faza 19) is planned to
+address this; not yet implemented.
+
+---
+
 ## Phase roadmap
 - **Phase 0** ✅ Environment + project bootstrap
 - **Phase 1** 🔄 Content structuring (add real GPX + JSON)
@@ -245,6 +265,6 @@ screen now navigates to `RootNavScreen`.
 - **Phase 7** ✅ Repository interfaces + new content models (API-readiness)
 - **Phase 8** ✅ 5-tab bottom navigation + full-trail map + branding footer
   (Faza 10 branding incidentally completed alongside `BrandFooter`)
-- **Phase 9** ⬜ Segment colors (#870203/#000000 alternating) — placeholder
-  palette in place, swap pending
+- **Phase 9** ✅ Segment colors (#870203/#000000 alternating), consistent
+  across full-trail map, legend, and Ghidul Călătorului
 

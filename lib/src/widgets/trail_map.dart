@@ -19,12 +19,18 @@ class TrailMap extends ConsumerStatefulWidget {
   final LatLng? userLocation;
   final bool compact; // true = small preview card, false = full screen
 
+  /// Segment color (Faza 9: alternating #870203/#000000 per stage), reused
+  /// consistently between the full-trail map and this per-stage map/guide.
+  /// Falls back to [AppColors.green] if not provided.
+  final Color? segmentColor;
+
   const TrailMap({
     super.key,
     required this.gpxAssetPath,
     this.stageId,
     this.userLocation,
     this.compact = false,
+    this.segmentColor,
   });
 
   @override
@@ -102,7 +108,7 @@ class _TrailMapState extends ConsumerState<TrailMap> {
                       Polyline(
                         points: points,
                         strokeWidth: 3.5,
-                        color: AppColors.green,
+                        color: widget.segmentColor ?? AppColors.green,
                       ),
                     ],
                   ),

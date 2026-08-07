@@ -80,6 +80,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             stageId: widget.stage.id,
             userLocation: _userLocation,
             compact: false,
+            segmentColor: AppColors.colorForStageOrder(widget.stage.order),
           ),
           if (_locationDenied)
             Positioned(
