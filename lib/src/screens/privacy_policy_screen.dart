@@ -99,8 +99,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
               title: 'Contact',
               body:
                   'Pentru întrebări legate de confidențialitate sau despre '
-                  'acest proiect, ne poți contacta prin site-ul '
-                  'stag-line.com.',
+                  'acest proiect, ne poți contacta prin site-ul Stagline '
+                  '(stag-line.com).',
             ),
             SizedBox(height: 8),
             BrandFooter(

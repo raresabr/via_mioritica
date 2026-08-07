@@ -14,6 +14,16 @@ class S {
   static const navGhid = 'Ghidul Călătorului';
   static const navAlbum = 'Album foto';
 
+  // UI/UX polish: short, dedicated labels for the 5-tab bottom nav only —
+  // the full labels above are too long for `BottomNavigationBarType.fixed`
+  // and get cramped/clipped. AppBar titles keep using the full labels
+  // above, unchanged.
+  static const navDespreNoiShort = 'Despre';
+  static const navHartaTraseuShort = 'Hartă';
+  static const navRecomandariShort = 'Recomandări';
+  static const navGhidShort = 'Ghid';
+  static const navAlbumShort = 'Album';
+
   // Stage list
   static const stageTitleHint = 'Traseu';
   static const stageDistance = 'Distanță';
@@ -90,7 +100,7 @@ class S {
   static const homeTagline = 'Descoperă România pas cu pas';
 
   // Despre Noi
-  static const aboutFooterFallback = 'stag-line.com';
+  static const aboutFooterFallback = 'Un proiect Stagline';
 
   // Recomandări practice
   static const recommendationsTitle = 'Recomandări practice';
@@ -115,6 +125,9 @@ class S {
   // Progress tracking (Faza 15 — local, no account)
   static const progressMarkCompleted = 'Marchează etapa ca finalizată';
   static const progressCompletedLabel = 'Etapă finalizată';
+  // UI/UX polish: accessibility labels for the tappable badge on StageCard.
+  static const progressMarkSemantics = 'Marchează ca finalizată';
+  static const progressUnmarkSemantics = 'Marchează ca nefinalizată';
   static const progressSummary = 'etape finalizate';
 
   // Privacy policy (Faza 18)

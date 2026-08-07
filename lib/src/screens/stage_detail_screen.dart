@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/stage_model.dart';
 import '../models/poi_model.dart';
 import '../providers/progress_providers.dart';
+import '../providers/providers.dart';
 import '../services/analytics_service.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
@@ -17,6 +18,44 @@ class StageDetailScreen extends ConsumerWidget {
   final StageModel stage;
 
   const StageDetailScreen({super.key, required this.stage});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // UI/UX polish: wait for the GPX track to be parsed *before* building
+    // the full layout. Previously the whole screen (stats, POIs, ...)
+    // appeared instantly while `TrailMap` kept showing its own internal
+    // spinner in the map area a moment later — a jarring two-step
+    // transition. By gating here, `TrailMap` finds the provider already
+    // resolved and never shows its own loading state, so the screen
+    // appears complete in a single step.
+    final trackAsync = ref.watch(trackPointsProvider(stage.gpxFile));
+
+    return trackAsync.when(
+      loading: () => Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.green,
+          foregroundColor: Colors.white,
+          title: Text(stage.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.green,
+          foregroundColor: Colors.white,
+          title: Text(stage.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        ),
+        body: _StageDetailBody(stage: stage),
+      ),
+      data: (_) => _StageDetailBody(stage: stage),
+    );
+  }
+}
+
+class _StageDetailBody extends ConsumerWidget {
+  final StageModel stage;
+
+  const _StageDetailBody({required this.stage});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

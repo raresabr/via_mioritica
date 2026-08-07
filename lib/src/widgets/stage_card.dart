@@ -10,11 +10,17 @@ class StageCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool isCompleted;
 
+  /// UI/UX polish: allows toggling "completed" directly from the list,
+  /// without navigating to the detail screen. Optional so other call
+  /// sites (if any) keep working with a purely read-only badge.
+  final ValueChanged<bool>? onToggleCompleted;
+
   const StageCard({
     super.key,
     required this.stage,
     required this.onTap,
     this.isCompleted = false,
+    this.onToggleCompleted,
   });
 
   Color _difficultyColor() {
@@ -36,6 +42,21 @@ class StageCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       clipBehavior: Clip.antiAlias,
+      // UI/UX polish: completed stages get a green border + soft green
+      // shadow/background tint, in addition to the checkmark badge — the
+      // "done" state should be obvious at a glance in a long list, not
+      // just from a small icon in a corner.
+      shape: isCompleted
+          ? RoundedRectangleBorder(
+              side: const BorderSide(color: AppColors.green, width: 2),
+              borderRadius: BorderRadius.circular(4),
+            )
+          : null,
+      color: isCompleted ? AppColors.green.withValues(alpha: 0.05) : null,
+      shadowColor: isCompleted
+          ? AppColors.green.withValues(alpha: 0.4)
+          : null,
+      elevation: isCompleted ? 3 : 1,
       child: InkWell(
         onTap: onTap,
         child: Column(
@@ -75,20 +96,20 @@ class StageCard extends StatelessWidget {
                   left: 8,
                   child: SegmentBadge(order: stage.order, size: 24),
                 ),
-                if (isCompleted)
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: AppColors.green,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.check,
-                          size: 16, color: Colors.white),
-                    ),
+                // UI/UX polish: always-visible, tappable completed toggle
+                // (previously a static badge shown only when completed).
+                // Wrapped in its own Material/InkResponse so the tap does
+                // NOT also trigger the card's onTap navigation.
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: _CompletedBadge(
+                    isCompleted: isCompleted,
+                    onTap: onToggleCompleted == null
+                        ? null
+                        : () => onToggleCompleted!(!isCompleted),
                   ),
+                ),
               ],
             ),
             Padding(
@@ -151,6 +172,43 @@ class StageCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Always-visible top-right completed-toggle badge on [StageCard]. Uses
+/// its own `Material`/`InkWell` hit-test area so tapping it does not also
+/// trigger the card's `onTap` (navigation to the detail screen).
+class _CompletedBadge extends StatelessWidget {
+  final bool isCompleted;
+  final VoidCallback? onTap;
+
+  const _CompletedBadge({required this.isCompleted, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: isCompleted
+          ? S.progressUnmarkSemantics
+          : S.progressMarkSemantics,
+      child: Material(
+        color: isCompleted ? AppColors.green : Colors.white.withValues(alpha: 0.85),
+        shape: const CircleBorder(),
+        elevation: 2,
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(6),
+            child: Icon(
+              isCompleted ? Icons.check : Icons.check_circle_outline,
+              size: 16,
+              color: isCompleted ? Colors.white : AppColors.textMuted,
+            ),
+          ),
         ),
       ),
     );

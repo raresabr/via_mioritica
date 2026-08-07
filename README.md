@@ -674,6 +674,61 @@ index) whenever a download starts, and only clears it on a clean finish:
 
 ---
 
+## UI/UX polish pass (post-Faza 21, user feedback)
+
+A round of 6 UI/UX fixes requested directly by the user on already-shipped
+screens — not a numbered "Faza" from the roadmap.
+
+1. **Rough loading transition entering a stage** — `StageDetailScreen`
+   used to render its whole layout instantly while `TrailMap` kept
+   showing its own separate spinner in the map area a moment later. Now
+   `StageDetailScreen` watches `trackPointsProvider(stage.gpxFile)` itself
+   and shows a single simple loading screen (AppBar + centered spinner)
+   until the GPX track is parsed, then builds the full layout in one
+   shot — no more content "popping in" separately from the map.
+2. **Mark stage completed directly from the list** — the top-right badge
+   on `StageCard` (previously a static checkmark shown only when
+   completed) is now always visible and tappable, calling
+   `progressProvider.notifier.setCompleted(...)` directly — synced with
+   the existing toggle inside `StageDetailScreen` via the same provider.
+   It has its own `Material`/`InkWell` hit-test area so tapping it does
+   not also trigger the card's navigation, plus `Semantics` labels for
+   accessibility.
+3. **Stronger visibility for completed stages** — `StageCard` now shows a
+   green border + soft green shadow + a subtle green background tint
+   when completed, in addition to the badge — the "done" state is
+   obvious at a glance in a long list.
+4. **Offline download card layout fix** — `OfflineDownloadCard`'s
+   `notDownloaded`, `downloading`/`paused`, `interrupted`, `complete`,
+   and `error` cases were all cramped `Row`s (long text + buttons on one
+   line, clipping on narrow screens). Rewritten as `Column`s (text above,
+   buttons below, using `Wrap` where there are two buttons) for
+   consistent, safe layout regardless of screen width.
+5. **Bottom nav labels too long for 5 tabs** — added short, dedicated
+   labels for the bottom nav only (`S.navDespreNoiShort`,
+   `S.navHartaTraseuShort`, etc. — "Despre" / "Hartă" / "Recomandări" /
+   "Ghid" / "Album"), keeping the existing full `S.navX` constants
+   unchanged for AppBar titles. Reduced nav label font size to 11 as
+   extra headroom.
+6. **Stagline brand footer** — `BrandFooter` now renders the deer-head
+   logo from `assets/images/stagline-logo.svg` (via the new `flutter_svg`
+   dependency) instead of a generic link icon, with a fixed `colorFilter`
+   tint — the source SVG has a bug (`fill="#"`, an invalid/incomplete hex
+   color on every path), so the filter overrides it entirely rather than
+   relying on the broken embedded fill. Footer text now reads "Un proiect
+   Stagline" everywhere (`about.json`'s `footerText`, the
+   `S.aboutFooterFallback` fallback, and the privacy policy screen),
+   replacing the old "stag-line.com" wording; the literal "stag-line.com"
+   mention in the privacy policy's Contact section now reads "Stagline
+   (stag-line.com)". The real URL (`stag-line.com`) is unchanged.
+
+Verified: `flutter analyze` clean (same 8 pre-existing infos),
+`flutter build apk --debug` and `flutter build ios --no-codesign --debug`
+both succeed. No new unit tests (Faza 22 explicitly deferred); no
+commit/push (user tests + commits manually).
+
+---
+
 ## Phase roadmap
 - **Phase 0** ✅ Environment + project bootstrap
 - **Phase 1** 🔄 Content structuring (add real GPX + JSON)
@@ -707,4 +762,7 @@ index) whenever a download starts, and only clears it on a clean finish:
 - **Phase 20** ✅ Offline download onboarding (one-time tip — see below)
 - **Phase 21** ✅ Resumable offline downloads across app restarts (see
   below)
-
+- **UI/UX polish pass** ✅ 6-point feedback fix — loading transition,
+  card completed-toggle, completed-stage visibility, offline card
+  layout, bottom nav labels, Stagline footer logo (see below, not a
+  numbered phase)

@@ -1,12 +1,14 @@
 // lib/src/widgets/brand_footer.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../utils/app_colors.dart';
 
 /// Reusable branding footer with a tappable link, shown on the "Despre Noi"
-/// screen (Faza 10). Text/URL come from [AboutContentModel] so they stay
-/// API-ready rather than hardcoded — only the fallback below is hardcoded,
-/// used if content fails to load.
+/// screen (Faza 10) and the privacy policy screen. Text/URL come from
+/// [AboutContentModel] so they stay API-ready rather than hardcoded — only
+/// the fallback in [AboutScreen]/[PrivacyPolicyScreen] is hardcoded, used
+/// if content fails to load.
 class BrandFooter extends StatelessWidget {
   final String text;
   final String url;
@@ -32,7 +34,20 @@ class BrandFooter extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.link, size: 14, color: AppColors.textMuted),
+            // UI/UX polish: Stagline deer-head logo instead of a generic
+            // link icon. The source SVG has a broken `fill="#"` on every
+            // path (invalid hex), so a fixed `colorFilter` is applied to
+            // override it — this ignores the embedded (broken) fill
+            // entirely and guarantees a consistent brand color regardless.
+            SvgPicture.asset(
+              'assets/images/stagline-logo.svg',
+              width: 16,
+              height: 16,
+              colorFilter: const ColorFilter.mode(
+                AppColors.textMuted,
+                BlendMode.srcIn,
+              ),
+            ),
             const SizedBox(width: 6),
             Text(
               text,

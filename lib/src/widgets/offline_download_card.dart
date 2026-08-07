@@ -65,22 +65,24 @@ class OfflineDownloadCard extends ConsumerWidget {
         );
 
       case OfflineDownloadStatus.notDownloaded:
-        return Row(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Text(
-                S.offlineNotDownloaded,
-                style: const TextStyle(
-                    fontSize: 13, color: AppColors.textMuted),
-              ),
+            const Text(
+              S.offlineNotDownloaded,
+              style: TextStyle(fontSize: 13, color: AppColors.textMuted),
             ),
-            ElevatedButton.icon(
-              onPressed: controller.estimateAndDownload,
-              icon: const Icon(Icons.download, size: 16),
-              label: const Text(S.offlineDownloadButton),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.green,
-                foregroundColor: Colors.white,
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: controller.estimateAndDownload,
+                icon: const Icon(Icons.download, size: 16),
+                label: const Text(S.offlineDownloadButton),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.green,
+                  foregroundColor: Colors.white,
+                ),
               ),
             ),
           ],
@@ -126,7 +128,11 @@ class OfflineDownloadCard extends ConsumerWidget {
                   fontSize: 12, color: AppColors.textMuted),
             ),
             const SizedBox(height: 8),
-            Row(
+            // UI/UX polish: buttons on their own Wrap-able row, left
+            // aligned, so long labels never get cramped/clipped next to
+            // each other on narrow screens.
+            Wrap(
+              spacing: 4,
               children: [
                 TextButton(
                   onPressed: state.status == OfflineDownloadStatus.paused
@@ -168,7 +174,8 @@ class OfflineDownloadCard extends ConsumerWidget {
                   fontSize: 12, color: AppColors.textMuted),
             ),
             const SizedBox(height: 8),
-            Row(
+            Wrap(
+              spacing: 4,
               children: [
                 ElevatedButton.icon(
                   onPressed: controller.resumeInterrupted,
@@ -189,35 +196,41 @@ class OfflineDownloadCard extends ConsumerWidget {
         );
 
       case OfflineDownloadStatus.complete:
-        return Row(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Text(
-                '${S.offlineComplete} '
-                '(${state.cachedTileCount} tile-uri, '
-                '~${state.cachedSizeMb.toStringAsFixed(1)} MB)',
-                style: const TextStyle(fontSize: 13, color: AppColors.green),
-              ),
+            Text(
+              '${S.offlineComplete} '
+              '(${state.cachedTileCount} tile-uri, '
+              '~${state.cachedSizeMb.toStringAsFixed(1)} MB)',
+              style: const TextStyle(fontSize: 13, color: AppColors.green),
             ),
-            TextButton(
-              onPressed: controller.deleteCache,
-              child: const Text(S.offlineDeleteButton),
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                onPressed: controller.deleteCache,
+                child: const Text(S.offlineDeleteButton),
+              ),
             ),
           ],
         );
 
       case OfflineDownloadStatus.error:
-        return Row(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Text(
-                state.errorMessage ?? S.offlineError,
-                style: const TextStyle(fontSize: 12, color: Colors.red),
-              ),
+            Text(
+              state.errorMessage ?? S.offlineError,
+              style: const TextStyle(fontSize: 12, color: Colors.red),
             ),
-            TextButton(
-              onPressed: controller.estimateAndDownload,
-              child: const Text(S.offlineRetryButton),
+            const SizedBox(height: 4),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                onPressed: controller.estimateAndDownload,
+                child: const Text(S.offlineRetryButton),
+              ),
             ),
           ],
         );

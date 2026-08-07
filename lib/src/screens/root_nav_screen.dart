@@ -49,27 +49,29 @@ class _RootNavScreenState extends State<RootNavScreen> {
         selectedItemColor: AppColors.green,
         unselectedItemColor: AppColors.textMuted,
         showUnselectedLabels: true,
+        selectedFontSize: 11,
+        unselectedFontSize: 11,
         onTap: (i) => setState(() => _index = i),
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.info_outline),
-            label: S.navDespreNoi,
+            label: S.navDespreNoiShort,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.map_outlined),
-            label: S.navHartaTraseu,
+            label: S.navHartaTraseuShort,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.checklist_outlined),
-            label: S.navRecomandari,
+            label: S.navRecomandariShort,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.hiking_outlined),
-            label: S.navGhid,
+            label: S.navGhidShort,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.photo_library_outlined),
-            label: S.navAlbum,
+            label: S.navAlbumShort,
           ),
         ],
       ),

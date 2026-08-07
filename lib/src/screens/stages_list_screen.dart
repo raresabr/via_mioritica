@@ -64,6 +64,11 @@ class StagesListScreen extends ConsumerWidget {
             return StageCard(
               stage: stage,
               isCompleted: completedStageIds.contains(stage.id),
+              onToggleCompleted: (value) =>
+                  ref.read(progressProvider.notifier).setCompleted(
+                        stage.id,
+                        value,
+                      ),
               onTap: () => Navigator.push(
                 ctx,
                 MaterialPageRoute(

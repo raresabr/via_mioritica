@@ -53,6 +53,7 @@ dependencies:
   package_info_plus: ^10.2.1
   firebase_crashlytics: ^5.2.7
   firebase_analytics: ^12.4.6
+  flutter_svg: ^2.2.1
 
 dev_dependencies:
   flutter_test:
@@ -94,6 +95,7 @@ flutter:
     - assets/gpx/transfagarasan.gpx
     - assets/gpx/moldoveanu.gpx
     - assets/images/main.jpg
+    - assets/images/stagline-logo.svg
     - assets/images/placeholders/
     - .env
 
