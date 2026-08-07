@@ -205,6 +205,15 @@ instead of gigabytes.
   use (this project qualifies). If the project's status ever becomes
   commercial, re-check https://www.maptiler.com/cloud/pricing/ before
   shipping bulk offline downloads at scale.
+- **iOS minimum deployment target: 15.0.** `objectbox_flutter_libs` (an FMTC
+  dependency) requires iOS ≥15.0; the project previously defaulted to 13.0,
+  which caused `pod install` to fail with "requires a higher minimum iOS
+  deployment version" when building for a real device. Fixed in
+  `ios/Podfile` (`platform :ios, '15.0'` + a `post_install` hook forcing
+  `IPHONEOS_DEPLOYMENT_TARGET = 15.0` on every pod target) and in
+  `ios/Runner.xcodeproj/project.pbxproj` (all 3 build configs). Verified with
+  `flutter build ios --no-codesign --debug` (succeeds) — iOS 15 (2021) is a
+  safe minimum given current device adoption.
 
 ---
 
