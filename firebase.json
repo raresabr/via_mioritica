@@ -1,0 +1,33 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "via-mioritica-app",
+          "appId": "1:744736994673:android:4a2457b9fc0a670a4732d0",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "via-mioritica-app",
+          "appId": "1:744736994673:ios:3658a6316332dd614732d0",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "via-mioritica-app",
+          "configurations": {
+            "android": "1:744736994673:android:4a2457b9fc0a670a4732d0",
+            "ios": "1:744736994673:ios:3658a6316332dd614732d0"
+          }
+        }
+      }
+    }
+  },
+  "remoteconfig": {
+    "template": "remoteconfig.template.json"
+  }
+}

@@ -1,9 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'firebase_options.dart';
 import 'src/screens/splash_screen.dart';
 import 'src/services/content_cache_box.dart';
+import 'src/services/remote_config_service.dart';
 import 'src/utils/app_theme.dart';
 
 Future<void> main() async {
@@ -12,6 +15,18 @@ Future<void> main() async {
   // Load .env for MAPTILER_KEY (ignored in git, see README)
   // In CI pass --dart-define=MAPTILER_KEY=xxx instead of .env
   await dotenv.load(fileName: '.env').catchError((_) {});
+
+  // Faza 14: Firebase + Remote Config, for the force-update gate. Non-fatal
+  // if it fails (e.g. offline on first launch) — RemoteConfigService fails
+  // open (never blocks the app just because init failed).
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    await RemoteConfigService.init();
+  } catch (_) {
+    // App still works normally; isForceUpdateRequired stays false.
+  }
 
   // Initialise FMTC (offline tile caching). Must happen before any FMTC
   // usage (store creation, tile provider, downloads). GPL-v3 licensed —

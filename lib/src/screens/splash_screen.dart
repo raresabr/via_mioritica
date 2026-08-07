@@ -1,7 +1,9 @@
 // lib/src/screens/splash_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/remote_config_service.dart';
 import '../utils/app_colors.dart';
+import 'force_update_screen.dart';
 import 'root_nav_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -32,9 +34,14 @@ class _SplashScreenState extends State<SplashScreen>
 
     Future.delayed(const Duration(milliseconds: 2400), () {
       if (!mounted) return;
+      // Faza 14: force-update gate — Remote Config was already fetched in
+      // main() before runApp(), so this is a synchronous, instant check.
+      final destination = RemoteConfigService.isForceUpdateRequired
+          ? const ForceUpdateScreen()
+          : const RootNavScreen();
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const RootNavScreen(),
+          pageBuilder: (_, __, ___) => destination,
           transitionsBuilder: (_, anim, __, child) =>
               FadeTransition(opacity: anim, child: child),
           transitionDuration: const Duration(milliseconds: 500),

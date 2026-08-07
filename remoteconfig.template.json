@@ -1,0 +1,31 @@
+{
+  "parameters": {
+    "min_supported_build_number": {
+      "defaultValue": {
+        "value": "1"
+      },
+      "description": "Faza 14 — lowest build number (versionCode/CFBundleVersion) allowed without forcing an update. Bump to a new release's build number to force older builds to update."
+    },
+    "force_update_message": {
+      "defaultValue": {
+        "value": "A apărut o versiune nouă a aplicației Via Mioritica. Te rugăm să actualizezi pentru a continua."
+      },
+      "description": "Faza 14 — message shown on the force-update blocking screen. Edit here to customize per-incident (e.g. explain what was fixed) without a new app release."
+    },
+    "android_store_url": {
+      "defaultValue": {
+        "value": "https://play.google.com/store/apps/details?id=ro.viamioritica.via_mioritica"
+      },
+      "description": "Faza 14 — Play Store URL opened by the \"Actualizează acum\" button on Android. Update once the app is actually published."
+    },
+    "ios_store_url": {
+      "defaultValue": {
+        "value": "https://apps.apple.com/app/id0000000000"
+      },
+      "description": "Faza 14 — App Store URL for the update button on iOS. Placeholder — update once published (blocked on paid Apple Developer Program, see README)."
+    }
+  },
+  "version": {
+    "versionNumber": "1"
+  }
+}

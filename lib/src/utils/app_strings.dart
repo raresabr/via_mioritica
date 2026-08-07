@@ -101,5 +101,11 @@ class S {
   // Hartă traseu (full route map)
   static const fullMapTitle = 'Hartă traseu';
   static const fullMapLegendTitle = 'Etape';
+
+  // Force update (Faza 14 — Remote Config)
+  static const forceUpdateTitle = 'Actualizare necesară';
+  static const forceUpdateButton = 'Actualizează acum';
+  static const forceUpdateStoreError =
+      'Nu s-a putut deschide magazinul de aplicații.';
 }
 
