@@ -2,7 +2,7 @@
   {
     "id": "brad-baia-de-cris",
     "name": "Brad – Baia de Criș",
-    "gpxFile": "assets/gpx/Brad - Baia de Criș.gpx",
+    "gpxFile": "assets/gpx/brad-baia-de-cris.gpx",
     "distanceKm": 20.3,
     "elevationGainM": 451,
     "elevationLossM": 540,
@@ -15,7 +15,7 @@
   {
     "id": "baia-de-cris-grohot",
     "name": "Baia de Criș – Grohot",
-    "gpxFile": "assets/gpx/Baia de Criș - Grohot.gpx",
+    "gpxFile": "assets/gpx/baia-de-cris-grohot.gpx",
     "distanceKm": 13.9,
     "elevationGainM": 758,
     "elevationLossM": 431,
@@ -28,7 +28,7 @@
   {
     "id": "grohot-dumbrava-de-sus",
     "name": "Grohot – Dumbrava de Sus",
-    "gpxFile": "assets/gpx/Grohot - Dumbrava de Sus.gpx",
+    "gpxFile": "assets/gpx/grohot-dumbrava-de-sus.gpx",
     "distanceKm": 13.4,
     "elevationGainM": 726,
     "elevationLossM": 724,
@@ -41,7 +41,7 @@
   {
     "id": "dumbrava-de-sus-blajeni-vulcan",
     "name": "Dumbrava de Sus – Blăjeni-Vulcan",
-    "gpxFile": "assets/gpx/Dumbrava de Sus - Blăjeni-Vulcan.gpx",
+    "gpxFile": "assets/gpx/dumbrava-de-sus-blajeni-vulcan.gpx",
     "distanceKm": 18.9,
     "elevationGainM": 1087,
     "elevationLossM": 921,
@@ -54,7 +54,7 @@
   {
     "id": "blajeni-vulcan-cerbu",
     "name": "Blăjeni-Vulcan – Cerbu",
-    "gpxFile": "assets/gpx/Blăjeni-Vulcan - Cerbu.gpx",
+    "gpxFile": "assets/gpx/blajeni-vulcan-cerbu.gpx",
     "distanceKm": 17.0,
     "elevationGainM": 651,
     "elevationLossM": 759,
@@ -67,7 +67,7 @@
   {
     "id": "cerbu-rosia-montana",
     "name": "Cerbu – Roșia Montană",
-    "gpxFile": "assets/gpx/Cerbu - Roșia Montană.gpx",
+    "gpxFile": "assets/gpx/cerbu-rosia-montana.gpx",
     "distanceKm": 11.9,
     "elevationGainM": 612,
     "elevationLossM": 355,
@@ -80,7 +80,7 @@
   {
     "id": "rosia-montana-mogos",
     "name": "Roșia Montană – Mogoș",
-    "gpxFile": "assets/gpx/Roșia Montană - Mogoș.gpx",
+    "gpxFile": "assets/gpx/rosia-montana-mogos.gpx",
     "distanceKm": 16.7,
     "elevationGainM": 631,
     "elevationLossM": 747,
@@ -93,7 +93,7 @@
   {
     "id": "mogos-dealul-geoagiului",
     "name": "Mogoș – Dealul Geoagiului",
-    "gpxFile": "assets/gpx/Mogoș - Dealul Geoagiului.gpx",
+    "gpxFile": "assets/gpx/mogos-dealul-geoagiului.gpx",
     "distanceKm": 15.9,
     "elevationGainM": 850,
     "elevationLossM": 732,
@@ -106,7 +106,7 @@
   {
     "id": "belis-margau",
     "name": "Beliș – Mărgău",
-    "gpxFile": "assets/gpx/Beliș - Mărgău.gpx",
+    "gpxFile": "assets/gpx/belis-margau.gpx",
     "distanceKm": 15.1,
     "elevationGainM": 151,
     "elevationLossM": 518,
@@ -119,7 +119,7 @@
   {
     "id": "margau-rogojel",
     "name": "Mărgău – Rogojel",
-    "gpxFile": "assets/gpx/Mărgău - Rogojel.gpx",
+    "gpxFile": "assets/gpx/margau-rogojel.gpx",
     "distanceKm": 15.6,
     "elevationGainM": 964,
     "elevationLossM": 704,
@@ -132,7 +132,7 @@
   {
     "id": "rogojel-visag",
     "name": "Rogojel – Vișag",
-    "gpxFile": "assets/gpx/Rogojel - Vișag.gpx",
+    "gpxFile": "assets/gpx/rogojel-visag.gpx",
     "distanceKm": 12.9,
     "elevationGainM": 558,
     "elevationLossM": 667,
@@ -145,7 +145,7 @@
   {
     "id": "visag-bologa",
     "name": "Vișag – Bologa",
-    "gpxFile": "assets/gpx/Vișag - Bologa.gpx",
+    "gpxFile": "assets/gpx/visag-bologa.gpx",
     "distanceKm": 10.2,
     "elevationGainM": 231,
     "elevationLossM": 624,
