@@ -1,4 +1,5 @@
 // lib/src/services/content_cache_box.dart
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 /// Single Hive box shared by all local content repositories for cache-first
@@ -12,9 +13,13 @@ class ContentCacheBox {
 
   /// Must be called once before any repository reads/writes the cache
   /// (done in `main.dart`, alongside the FMTC init).
-  static Future<void> init() async {
+  static Future<void> init({String? path}) async {
     if (_box != null) return;
-    await Hive.initFlutter();
+    if (path != null) {
+      Hive.init(path);
+    } else {
+      await Hive.initFlutter();
+    }
     _box = await Hive.openBox(boxName);
   }
 
@@ -26,5 +31,12 @@ class ContentCacheBox {
       );
     }
     return box;
+  }
+
+  /// Closes and forgets the box. Test-only.
+  @visibleForTesting
+  static Future<void> resetForTest() async {
+    await _box?.close();
+    _box = null;
   }
 }

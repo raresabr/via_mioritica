@@ -11,11 +11,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:via_mioritica/main.dart' show ViaMioriticaApp;
 
 void main() {
-  testWidgets('App smoke test – renders without crashing',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const ProviderScope(child: ViaMioriticaApp()),
-    );
+  testWidgets('App smoke test – renders without crashing', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const ProviderScope(child: ViaMioriticaApp()));
     // App title appears in the app bar
     expect(find.text('Via Mioritica'), findsOneWidget);
   });
