@@ -2,14 +2,22 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const green = Color(0xFF2D6A4F);
-  static const greenLight = Color(0xFF52B788);
-  static const brown = Color(0xFF795548);
-  static const cream = Color(0xFFF5F1E9);
-  static const parchment = Color(0xFFEBD4A9);
+  // Palette taken from the Simplicity Retreat web design.
+  static const green = Color(0xFF547130); // moss
+  static const greenLight = Color(0xFF7C9A52);
+  static const brown = Color(0xFF7A705A); // earth-500
+  static const cream = Color(0xFFF6F1E4);
+  static const parchment = Color(0xFFE9DFC6); // sand
+  static const night = Color(0xFF1D1A12);
+  static const night800 = Color(0xFF26221A);
+  static const earth = Color(0xFF3F3929);
+  static const sun = Color(0xFFEDB234);
+  static const sun300 = Color(0xFFF5CF78);
+  static const sun600 = Color(0xFFC98F12);
+  static const sky = Color(0xFF216BA5);
   static const segmentRed = Color(0xFF870203);
-  static const textDark = Color(0xFF1B1B1B);
-  static const textMuted = Color(0xFF6B6B6B);
+  static const textDark = Color(0xFF1D1A12);
+  static const textMuted = Color(0xFF7A705A);
 
   /// Alternating brand palette per segment/stage (Faza 9), in order:
   /// #870203 (dark red) / #000000 (black). Both are dark enough for

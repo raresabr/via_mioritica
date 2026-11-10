@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +16,7 @@ import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
 import '../utils/map_config.dart';
 import '../utils/trail_geo.dart';
+import '../widgets/design.dart';
 import '../widgets/map_scale_bar.dart';
 import '../widgets/segment_badge.dart';
 import '../widgets/stages_sheet.dart';
@@ -75,10 +77,11 @@ class _FullTrailMapScreenState extends ConsumerState<FullTrailMapScreen> {
 
     return Scaffold(
       body: stagesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => const Center(child: Text(S.errorLoad)),
+        loading: () => const Skeleton(radius: 0),
+        error: (e, _) =>
+            ErrorRetry(onRetry: () => ref.invalidate(stagesProvider)),
         data: (stages) => tracksAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Skeleton(radius: 0),
           error: (e, _) => const Center(child: Text(S.errorGpx)),
           data: (tracks) => _buildMap(stages, tracks),
         ),
@@ -146,50 +149,82 @@ class _FullTrailMapScreenState extends ConsumerState<FullTrailMapScreen> {
                 ],
               ),
             const MapScaleBar(),
-            RichAttributionWidget(
-              alignment: AttributionAlignment.bottomRight,
-              popupInitialDisplayDuration: Duration.zero,
-              attributions: [
-                TextSourceAttribution(
-                  'MapTiler',
-                  onTap: () => _open('https://www.maptiler.com/copyright/'),
-                ),
-                TextSourceAttribution(
-                  'OpenStreetMap',
-                  onTap: () => _open('https://www.openstreetmap.org/copyright'),
-                ),
-              ],
+            Padding(
+              padding: EdgeInsets.only(bottom: navBarClearance(context)),
+              child: RichAttributionWidget(
+                alignment: AttributionAlignment.bottomRight,
+                popupInitialDisplayDuration: Duration.zero,
+                attributions: [
+                  TextSourceAttribution(
+                    'MapTiler',
+                    onTap: () => _open('https://www.maptiler.com/copyright/'),
+                  ),
+                  TextSourceAttribution(
+                    'OpenStreetMap',
+                    onTap: () =>
+                        _open('https://www.openstreetmap.org/copyright'),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
         Positioned(
           left: 16,
-          bottom: 24,
-          child: FloatingActionButton(
-            heroTag: 'main_map_location',
-            tooltip: S.fullMapMyLocation,
-            backgroundColor: Colors.white,
-            foregroundColor: AppColors.textDark,
-            onPressed: _goToMyLocation,
-            child: const Icon(Icons.navigation),
-          ),
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 24,
-          child: Center(
-            child: FloatingActionButton.extended(
-              heroTag: 'main_map_stages',
-              backgroundColor: AppColors.textDark,
-              foregroundColor: Colors.white,
-              icon: const Icon(Icons.route),
-              label: const Text(
-                S.fullMapStagesButton,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          right: 16,
+          bottom: navBarClearance(context) + 4,
+          child: Row(
+            children: [
+              GlassIconButton(
+                icon: Icons.near_me_rounded,
+                tooltip: S.fullMapMyLocation,
+                dark: false,
+                size: 56,
+                onTap: _goToMyLocation,
               ),
-              onPressed: () => _openStages(drawn, tracks),
-            ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: PressableScale(
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    _openStages(drawn, tracks);
+                  },
+                  child: Container(
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: AppColors.night,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.night.withValues(alpha: 0.35),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.route_rounded,
+                          color: AppColors.sun,
+                          size: 22,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          S.fullMapStagesButton,
+                          style: TextStyle(
+                            color: AppColors.cream,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -209,7 +244,12 @@ class _FullTrailMapScreenState extends ConsumerState<FullTrailMapScreen> {
     _mapController.fitCamera(
       CameraFit.bounds(
         bounds: bounds,
-        padding: const EdgeInsets.fromLTRB(40, 80, 40, 140),
+        padding: EdgeInsets.fromLTRB(
+          40,
+          80,
+          40,
+          navBarClearance(context) + 100,
+        ),
         maxZoom: 14,
       ),
     );
@@ -291,7 +331,7 @@ class _UserDot extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Colors.blue,
+        color: AppColors.sky,
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white, width: 3),
         boxShadow: const [

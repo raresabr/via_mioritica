@@ -9,6 +9,7 @@ import '../repositories/offline_map_repository.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
 import '../utils/map_config.dart';
+import 'design.dart';
 
 class TrailMap extends ConsumerStatefulWidget {
   final String gpxAssetPath;
@@ -67,7 +68,7 @@ class _TrailMapState extends ConsumerState<TrailMap> {
     final trackAsync = ref.watch(trackPointsProvider(widget.gpxAssetPath));
 
     return trackAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Skeleton(radius: 0),
       error: (e, _) => Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -125,7 +126,7 @@ class _TrailMapState extends ConsumerState<TrailMap> {
                         height: 24,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.blue,
+                            color: AppColors.sky,
                             shape: BoxShape.circle,
                             border: Border.all(color: Colors.white, width: 3),
                             boxShadow: const [
@@ -145,15 +146,14 @@ class _TrailMapState extends ConsumerState<TrailMap> {
             // Follow-me button (only on full map)
             if (!widget.compact && widget.userLocation != null)
               Positioned(
-                bottom: 16,
+                bottom: 24,
                 right: 16,
-                child: FloatingActionButton.small(
-                  heroTag: 'follow_me',
-                  backgroundColor: _followUser ? AppColors.green : Colors.white,
-                  foregroundColor: _followUser ? Colors.white : AppColors.green,
-                  onPressed: _toggleFollow,
+                child: GlassIconButton(
+                  icon: Icons.my_location_rounded,
                   tooltip: S.mapFollowMe,
-                  child: const Icon(Icons.my_location),
+                  dark: !_followUser,
+                  size: 52,
+                  onTap: _toggleFollow,
                 ),
               ),
           ],

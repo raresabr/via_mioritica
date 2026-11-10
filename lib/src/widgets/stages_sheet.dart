@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../models/stage_model.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
+import '../utils/app_theme.dart';
+import 'design.dart';
 import 'segment_badge.dart';
 
 /// Bottom sheet listing the documented stages. Pops with the chosen
@@ -20,7 +22,7 @@ class StagesSheet extends StatelessWidget {
     return showModalBottomSheet<StageModel?>(
       context: context,
       isScrollControlled: true,
-      showDragHandle: true,
+      backgroundColor: Colors.transparent,
       builder: (_) => StagesSheet(stages: stages),
     );
   }
@@ -33,36 +35,64 @@ class StagesSheet extends StatelessWidget {
       initialChildSize: 0.6,
       minChildSize: 0.3,
       maxChildSize: 0.92,
-      builder: (context, controller) => ListView(
-        controller: controller,
-        padding: const EdgeInsets.only(bottom: 24),
-        children: [
-          ListTile(
-            key: const Key('stagesSheetAll'),
-            leading: const Icon(Icons.route, color: AppColors.green),
-            title: const Text(
-              S.fullMapAllStages,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Text(
-              '${stages.length} ${S.fullMapLegendTitle.toLowerCase()} · '
-              '${totalKm.toStringAsFixed(1)} km ${S.fullMapDocumented}',
-            ),
-            onTap: () => Navigator.of(context).pop(),
-          ),
-          const Divider(height: 1),
-          for (final stage in stages)
+      builder: (context, controller) => GlassSheet(
+        child: ListView(
+          controller: controller,
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
+          children: [
             ListTile(
-              key: Key('stagesSheet_${stage.id}'),
-              leading: SegmentBadge(order: stage.order, size: 28),
-              title: Text(stage.name),
-              subtitle: Text(
-                '${stage.distanceKm.toStringAsFixed(1)} km · '
-                '${stage.durationEstimate}',
+              key: const Key('stagesSheetAll'),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-              onTap: () => Navigator.of(context).pop(stage),
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(
+                  color: AppColors.green,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.route_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              title: Text(S.fullMapAllStages, style: displayStyle(19)),
+              subtitle: Text(
+                '${stages.length} ${S.fullMapLegendTitle.toLowerCase()} · '
+                '${totalKm.toStringAsFixed(1)} km ${S.fullMapDocumented}',
+              ),
+              onTap: () => Navigator.of(context).pop(),
             ),
-        ],
+            const Divider(height: 16),
+            for (final stage in stages)
+              ListTile(
+                key: Key('stagesSheet_${stage.id}'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                leading: SegmentBadge(order: stage.order, size: 36),
+                title: Text(
+                  stage.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+                subtitle: Text(
+                  '${stage.distanceKm.toStringAsFixed(1)} km · '
+                  '${stage.durationEstimate}',
+                ),
+                trailing: const Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.brown,
+                ),
+                onTap: () => Navigator.of(context).pop(stage),
+              ),
+          ],
+        ),
       ),
     );
   }

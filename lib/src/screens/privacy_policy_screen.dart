@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
+import '../utils/app_theme.dart';
 import '../widgets/brand_footer.dart';
 
 /// Faza 18 — privacy policy screen.
@@ -23,13 +24,19 @@ class PrivacyPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.cream,
       appBar: AppBar(
         title: const Text(S.privacyPolicyTitle),
-        backgroundColor: AppColors.green,
-        foregroundColor: Colors.white,
+        titleTextStyle: displayStyle(22),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        physics: const BouncingScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(
+          24,
+          8,
+          24,
+          MediaQuery.paddingOf(context).bottom + 24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
@@ -123,28 +130,23 @@ class _Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: AppColors.green,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            body,
-            style: const TextStyle(
-              fontSize: 14,
-              height: 1.5,
-              color: AppColors.textDark,
-            ),
-          ),
-        ],
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.earth.withValues(alpha: 0.08)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: displayStyle(19, height: 1.2)),
+            const SizedBox(height: 10),
+            Text(body, style: Theme.of(context).textTheme.bodyMedium),
+          ],
+        ),
       ),
     );
   }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../services/settings_box.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
+import '../utils/app_theme.dart';
+import 'design.dart';
 
 /// Faza 20 — one-time onboarding tip pointing new users at the offline
 /// map download feature (Faza 2b), shown once on the first app launch
@@ -23,10 +25,7 @@ class OfflineOnboardingSheet extends StatelessWidget {
       context: context,
       isDismissible: false,
       enableDrag: false,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (_) => const OfflineOnboardingSheet(),
     );
     await SettingsBox.markOfflineOnboardingSeen();
@@ -34,41 +33,38 @@ class OfflineOnboardingSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return GlassSheet(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+        padding: const EdgeInsets.fromLTRB(28, 24, 28, 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(
-              Icons.download_for_offline_outlined,
-              color: AppColors.green,
-              size: 40,
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              S.offlineOnboardingTitle,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.green,
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: AppColors.sun.withValues(alpha: 0.18),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.download_for_offline_rounded,
+                color: AppColors.sun600,
+                size: 34,
               ),
             ),
-            const SizedBox(height: 10),
-            const Text(
+            const SizedBox(height: 18),
+            Text(S.offlineOnboardingTitle, style: displayStyle(26)),
+            const SizedBox(height: 12),
+            Text(
               S.offlineOnboardingBody,
-              style: TextStyle(fontSize: 14, height: 1.5),
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              child: FilledButton(
                 onPressed: () => Navigator.of(context).pop(),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.green,
-                  foregroundColor: Colors.white,
-                ),
                 child: const Text(S.offlineOnboardingButton),
               ),
             ),

@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/remote_config_service.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
+import '../utils/app_theme.dart';
 
 /// Faza 14 — blocking screen shown instead of [RootNavScreen] when
 /// [RemoteConfigService.isForceUpdateRequired] is true.
@@ -33,7 +34,7 @@ class ForceUpdateScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: AppColors.green,
+        backgroundColor: AppColors.night,
         body: SafeArea(
           child: Center(
             child: Padding(
@@ -41,48 +42,41 @@ class ForceUpdateScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
-                    Icons.system_update,
-                    size: 72,
-                    color: Colors.white,
+                  Container(
+                    width: 96,
+                    height: 96,
+                    decoration: BoxDecoration(
+                      color: AppColors.sun.withValues(alpha: 0.16),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.system_update_rounded,
+                      size: 44,
+                      color: AppColors.sun,
+                    ),
                   ),
-                  const SizedBox(height: 24),
-                  const Text(
+                  const SizedBox(height: 28),
+                  Text(
                     S.forceUpdateTitle,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: displayStyle(32, color: AppColors.cream),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     RemoteConfigService.forceUpdateMessage,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 16,
-                      height: 1.4,
+                      color: AppColors.cream.withValues(alpha: 0.78),
+                      fontSize: 16.5,
+                      height: 1.55,
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 36),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton(
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppColors.green,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
                       onPressed: () => _openStore(context),
-                      child: const Text(
-                        S.forceUpdateButton,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      child: const Text(S.forceUpdateButton),
                     ),
                   ),
                 ],

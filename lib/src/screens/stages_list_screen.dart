@@ -6,6 +6,8 @@ import '../providers/progress_providers.dart';
 import '../providers/providers.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
+import '../utils/app_theme.dart';
+import '../widgets/design.dart';
 import '../widgets/stage_card.dart';
 import 'stage_detail_screen.dart';
 
@@ -18,68 +20,59 @@ class StagesListScreen extends ConsumerWidget {
     final completedStageIds = ref.watch(progressProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(S.navGhid),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: Image.asset(
-              'assets/images/placeholders/logo_placeholder.png',
-              height: 32,
-              errorBuilder: (ctx, err, _) =>
-                  const Icon(Icons.terrain, color: Colors.white),
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.cream,
       body: stagesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.error_outline,
-                size: 48,
-                color: AppColors.textMuted,
-              ),
-              const SizedBox(height: 8),
-              const Text(S.errorLoad),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.refresh(stagesProvider),
-                child: const Text(S.retry),
-              ),
-            ],
+        loading: () => const SkeletonList(),
+        error: (e, _) =>
+            ErrorRetry(onRetry: () => ref.invalidate(stagesProvider)),
+        data: (stages) => CustomScrollView(
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
           ),
-        ),
-        data: (stages) => ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          itemCount: stages.length + 1,
-          itemBuilder: (ctx, i) {
-            if (i == 0) {
-              return _ProgressSummary(
+          slivers: [
+            const SliverToBoxAdapter(
+              child: ScreenHeader(eyebrow: S.navGhidShort, title: S.navGhid),
+            ),
+            SliverToBoxAdapter(
+              child: _ProgressSummary(
                 totalStages: stages.length,
                 completedCount: stages
                     .where((s) => completedStageIds.contains(s.id))
                     .length,
-              );
-            }
-            final stage = stages[i - 1];
-            return StageCard(
-              stage: stage,
-              isCompleted: completedStageIds.contains(stage.id),
-              onToggleCompleted: (value) => ref
-                  .read(progressProvider.notifier)
-                  .setCompleted(stage.id, value),
-              onTap: () => Navigator.push(
-                ctx,
-                MaterialPageRoute<void>(
-                  builder: (_) => StageDetailScreen(stage: stage),
-                ),
               ),
-            );
-          },
+            ),
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(
+                16,
+                8,
+                16,
+                navBarClearance(context) + 8,
+              ),
+              sliver: SliverList.separated(
+                itemCount: stages.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 18),
+                itemBuilder: (ctx, i) {
+                  final stage = stages[i];
+                  return FadeSlideIn(
+                    index: i,
+                    child: StageCard(
+                      stage: stage,
+                      isCompleted: completedStageIds.contains(stage.id),
+                      onToggleCompleted: (value) => ref
+                          .read(progressProvider.notifier)
+                          .setCompleted(stage.id, value),
+                      onTap: () => Navigator.push(
+                        ctx,
+                        MaterialPageRoute<void>(
+                          builder: (_) => StageDetailScreen(stage: stage),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -104,42 +97,62 @@ class _ProgressSummary extends StatelessWidget {
     final percent = completedCount / totalStages;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '$completedCount/$totalStages ${S.progressSummary}',
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: AppColors.textDark,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.night,
+          borderRadius: BorderRadius.circular(28),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: percent * 100),
+                  duration: const Duration(milliseconds: 900),
+                  curve: AppFonts.expo,
+                  builder: (_, v, _) => Text(
+                    '${v.round()}%',
+                    style: displayStyle(44, color: AppColors.sun, height: 1),
+                  ),
                 ),
-              ),
-              Text(
-                '${(percent * 100).round()}%',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: AppColors.green,
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      '$completedCount/$totalStages ${S.progressSummary}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        height: 1.3,
+                        color: AppColors.cream,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: percent,
-              minHeight: 6,
-              backgroundColor: AppColors.cream,
-              valueColor: const AlwaysStoppedAnimation(AppColors.green),
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: percent),
+                duration: const Duration(milliseconds: 900),
+                curve: AppFonts.expo,
+                builder: (_, v, _) => LinearProgressIndicator(
+                  value: v,
+                  minHeight: 8,
+                  backgroundColor: Colors.white.withValues(alpha: 0.12),
+                  valueColor: const AlwaysStoppedAnimation(AppColors.sun),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/providers.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
+import '../utils/app_theme.dart';
 import '../widgets/brand_footer.dart';
+import '../widgets/design.dart';
 import 'privacy_policy_screen.dart';
 
 class AboutScreen extends ConsumerWidget {
@@ -15,120 +17,151 @@ class AboutScreen extends ConsumerWidget {
     final aboutAsync = ref.watch(aboutContentProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.parchment,
-      appBar: AppBar(
-        title: const Text(S.navDespreNoi),
-        backgroundColor: AppColors.green,
-        foregroundColor: Colors.white,
-      ),
+      backgroundColor: AppColors.cream,
       body: aboutAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.error_outline,
-                size: 48,
-                color: AppColors.textMuted,
-              ),
-              const SizedBox(height: 8),
-              const Text(S.errorLoad),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.invalidate(aboutContentProvider),
-                child: const Text(S.retry),
-              ),
-            ],
-          ),
-        ),
-        data: (about) => CustomScrollView(
-          slivers: [
-            // UI/UX polish: hero image edge-to-edge (no padding), flush
-            // against the AppBar — previously wrapped in the same
-            // padded SingleChildScrollView as the rest of the content,
-            // leaving a visible margin on every side including the top.
-            SliverToBoxAdapter(
-              child: Image.asset(
-                'assets/images/romania_map.webp',
-                width: double.infinity,
-                fit: BoxFit.fitWidth,
-                errorBuilder: (_, _, _) => Container(
-                  height: 200,
-                  color: AppColors.green,
-                  child: const Center(
-                    child: Icon(Icons.terrain, size: 56, color: Colors.white),
+        loading: () => const Skeleton(radius: 0),
+        error: (e, _) =>
+            ErrorRetry(onRetry: () => ref.invalidate(aboutContentProvider)),
+        data: (about) {
+          final title = about.title.isNotEmpty ? about.title : S.appName;
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    MediaQuery.paddingOf(context).top + 12,
+                    16,
+                    0,
+                  ),
+                  child: FadeSlideIn(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: AspectRatio(
+                        aspectRatio: 1200 / 851,
+                        child: Image.asset(
+                          'assets/images/romania_map.webp',
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => Container(
+                            color: AppColors.green,
+                            child: const Center(
+                              child: Icon(
+                                Icons.terrain_rounded,
+                                size: 56,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-            SliverPadding(
-              padding: const EdgeInsets.all(20),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  const SizedBox(height: 20),
-                  Text(
-                    about.title.isNotEmpty ? about.title : S.appName,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Georgia',
-                      fontFamilyFallback: ['serif'],
-                      color: AppColors.segmentRed,
-                    ),
+              SliverToBoxAdapter(
+                child: Container(
+                  color: AppColors.cream,
+                  padding: EdgeInsets.fromLTRB(
+                    28,
+                    24,
+                    28,
+                    navBarClearance(context),
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    about.body.isNotEmpty ? about.body : S.contentInProgress,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      height: 1.6,
-                      fontFamily: 'Georgia',
-                      fontFamilyFallback: ['serif'],
-                      color: AppColors.textDark,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: TextButton.icon(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (_) => const PrivacyPolicyScreen(),
+                  child: FadeSlideIn(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Eyebrow(
+                          S.navDespreNoiShort,
+                          color: AppColors.sun600,
                         ),
-                      ),
-                      icon: const Icon(
-                        Icons.privacy_tip_outlined,
-                        size: 18,
-                        color: AppColors.textMuted,
-                      ),
-                      label: const Text(
-                        S.privacyPolicyLinkLabel,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: AppColors.textMuted,
-                          decoration: TextDecoration.underline,
+                        const SizedBox(height: 10),
+                        Text(title, style: displayStyle(36, height: 1.08)),
+                        const SizedBox(height: 20),
+                        Text(
+                          about.body.isNotEmpty
+                              ? about.body
+                              : S.contentInProgress,
+                          style: Theme.of(context).textTheme.bodyLarge
+                              ?.copyWith(fontSize: 18, height: 1.7),
                         ),
-                      ),
+                        const SizedBox(height: 28),
+                        PressableScale(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (_) => const PrivacyPolicyScreen(),
+                            ),
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(color: AppColors.parchment),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.green.withValues(
+                                      alpha: 0.12,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(
+                                    Icons.shield_outlined,
+                                    size: 20,
+                                    color: AppColors.green,
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                const Expanded(
+                                  child: Text(
+                                    S.privacyPolicyLinkLabel,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15,
+                                      color: AppColors.night,
+                                    ),
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 20,
+                                  color: AppColors.earth,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Center(
+                          child: BrandFooter(
+                            text: about.footerText.isNotEmpty
+                                ? about.footerText
+                                : S.aboutFooterFallback,
+                            url: about.footerUrl.isNotEmpty
+                                ? about.footerUrl
+                                : 'https://stag-line.com/',
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Center(
-                    child: BrandFooter(
-                      text: about.footerText.isNotEmpty
-                          ? about.footerText
-                          : S.aboutFooterFallback,
-                      url: about.footerUrl.isNotEmpty
-                          ? about.footerUrl
-                          : 'https://stag-line.com/',
-                    ),
-                  ),
-                ]),
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        },
       ),
     );
   }
