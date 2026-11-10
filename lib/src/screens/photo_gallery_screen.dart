@@ -7,7 +7,16 @@ import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
 
 /// null = no filter (show all photos).
-final _selectedStageFilterProvider = StateProvider<String?>((ref) => null);
+class _StageFilter extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void select(String? id) => state = id;
+}
+
+final _selectedStageFilterProvider = NotifierProvider<_StageFilter, String?>(
+  _StageFilter.new,
+);
 
 class PhotoGalleryScreen extends ConsumerWidget {
   const PhotoGalleryScreen({super.key});
@@ -31,7 +40,7 @@ class PhotoGalleryScreen extends ConsumerWidget {
               stages: stages,
               selectedStageId: selectedStageId,
               onSelect: (id) =>
-                  ref.read(_selectedStageFilterProvider.notifier).state = id,
+                  ref.read(_selectedStageFilterProvider.notifier).select(id),
             ),
             orElse: () => const SizedBox.shrink(),
           ),
