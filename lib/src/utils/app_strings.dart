@@ -115,6 +115,12 @@ class S {
   // Hartă traseu (full route map)
   static const fullMapTitle = 'Hartă traseu';
   static const fullMapLegendTitle = 'Etape';
+  static const fullMapStagesButton = 'Etape';
+  static const fullMapAllStages = 'Tot traseul documentat';
+  static const fullMapMyLocation = 'Locația mea';
+  static const fullMapLocationUnavailable =
+      'Locația nu este disponibilă. Activează serviciile de localizare.';
+  static const fullMapDocumented = 'documentat';
 
   // Force update (Faza 14 — Remote Config)
   static const forceUpdateTitle = 'Actualizare necesară';

@@ -98,7 +98,8 @@ flutter:
     - assets/data/photos.json
     - assets/data/about.json
     - assets/gpx/
-    - assets/images/main.jpg
+    - assets/images/romania_map.webp
+    - assets/images/splash.webp
     - assets/images/stagline-logo.svg
     - assets/images/placeholders/
     - .env

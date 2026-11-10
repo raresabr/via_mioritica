@@ -622,12 +622,18 @@ across tab switches) and 5 tabs, in this fixed order:
 
 1. **Despre Noi** (`AboutScreen`) — org content (placeholder for now) +
    `BrandFooter` linking to https://stag-line.com/.
-2. **Hartă traseu** (`FullTrailMapScreen`) — the *entire* trail, all stages
-   rendered simultaneously as colored polylines (`AppColors.colorForStageOrder`)
-   with a tap-through legend. This is distinct from the per-stage map reached
-   from "Ghidul Călătorului", which shows one segment with offline
-   download + live GPS. The full-trail map uses plain online tiles (no FMTC
-   override) — offline caching stays scoped per-stage.
+2. **Hartă traseu** (`FullTrailMapScreen`) — the main map: starts on all of
+   Romania and draws every documented stage (GPX) as a white-cased polyline in
+   the stage colour. A pill **Etape** button opens a sheet with all stages
+   (tap = zoom to that stage, or "Tot traseul documentat" to reset), plus a
+   location button, a scale bar and MapTiler/OSM attribution. Tiles seen here
+   are cached in the FMTC store `main_map`. This is distinct from the
+   per-stage map reached from "Ghidul Călătorului" (offline download + live
+   GPS).
+
+   **Adding a new stage to the map**: put the GPX in `assets/gpx/` and add an
+   entry to `assets/data/stages.json` — it appears on the main map
+   automatically (no code change).
 3. **Recomandări practice** (`RecommendationsScreen`) — general hiking-safety
    tips from `assets/data/recommendations.json`.
 4. **Ghidul Călătorului** (`StagesListScreen` → `StageDetailScreen` →
@@ -646,8 +652,8 @@ Each stage/segment gets a deterministic color from `AppColors.segmentPalette`,
 alternating **#870203** (dark red) / **#000000** (black) based on
 `stage.order` (`AppColors.colorForStageOrder(order)`), consistently across:
 
-- **Hartă traseu** (`FullTrailMapScreen`) — polyline per stage + legend
-  swatches.
+- **Hartă traseu** (`FullTrailMapScreen`) — polyline per stage, `E#` badges
+  and the stages sheet.
 - **Ghidul Călătorului** — `StageCard` top accent stripe (stage list) and
   the single-stage polyline in `TrailMap` (used by both `MapScreen` and the
   compact preview in `StageDetailScreen`), via the new `TrailMap.segmentColor`

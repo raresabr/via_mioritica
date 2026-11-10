@@ -15,6 +15,7 @@ class AboutScreen extends ConsumerWidget {
     final aboutAsync = ref.watch(aboutContentProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.parchment,
       appBar: AppBar(
         title: const Text(S.navDespreNoi),
         backgroundColor: AppColors.green,
@@ -49,10 +50,9 @@ class AboutScreen extends ConsumerWidget {
             // leaving a visible margin on every side including the top.
             SliverToBoxAdapter(
               child: Image.asset(
-                'assets/images/main.jpg',
-                height: 200,
+                'assets/images/romania_map.webp',
                 width: double.infinity,
-                fit: BoxFit.cover,
+                fit: BoxFit.fitWidth,
                 errorBuilder: (_, _, _) => Container(
                   height: 200,
                   color: AppColors.green,
@@ -69,18 +69,24 @@ class AboutScreen extends ConsumerWidget {
                   const SizedBox(height: 20),
                   Text(
                     about.title.isNotEmpty ? about.title : S.appName,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 22,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.green,
+                      fontFamily: 'Georgia',
+                      fontFamilyFallback: ['serif'],
+                      color: AppColors.segmentRed,
                     ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     about.body.isNotEmpty ? about.body : S.contentInProgress,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 17,
                       height: 1.6,
+                      fontFamily: 'Georgia',
+                      fontFamilyFallback: ['serif'],
                       color: AppColors.textDark,
                     ),
                   ),

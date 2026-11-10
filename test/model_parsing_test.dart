@@ -51,7 +51,7 @@ void main() {
   test('optional fields are preserved', () {
     final photo = PhotoModel.fromJson({
       'id': 'photo-1',
-      'assetPath': 'assets/images/main.jpg',
+      'assetPath': 'assets/images/romania_map.webp',
     });
     final about = AboutContentModel.fromJson({});
     expect(photo.stageId, isNull);

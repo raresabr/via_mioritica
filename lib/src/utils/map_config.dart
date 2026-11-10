@@ -22,6 +22,10 @@ class MapConfig {
       '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
   static const int minZoom = 8;
+
+  /// The main map shows all of Romania, which needs a much lower zoom than the
+  /// per-stage maps.
+  static const double mainMapMinZoom = 5.5;
   static const int maxZoom = 17;
 
   /// Zoom levels to cache for offline use (corridor download).
