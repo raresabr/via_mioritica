@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 import 'package:via_mioritica/src/services/content_cache_box.dart';
 import 'package:via_mioritica/src/services/progress_box.dart';
 

@@ -1,6 +1,6 @@
 // lib/src/services/content_cache_box.dart
 import 'package:flutter/foundation.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 /// Single Hive box shared by all local content repositories for cache-first
 /// loading (Faza 13). Stores raw decoded JSON (Map/List of primitives), not

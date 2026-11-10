@@ -1,5 +1,5 @@
 // lib/src/services/settings_box.dart
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 /// Small Hive box for one-off local app-state flags (Faza 20: has the user
 /// already seen the offline-download onboarding tip?). Deliberately

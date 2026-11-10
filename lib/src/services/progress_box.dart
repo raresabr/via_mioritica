@@ -1,6 +1,6 @@
 // lib/src/services/progress_box.dart
 import 'package:flutter/foundation.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 /// Separate Hive box for local progress tracking (Faza 15) — kept apart
 /// from `ContentCacheBox` (Faza 13) on purpose: that box is a *disposable*
