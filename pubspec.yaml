@@ -92,6 +92,14 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  fonts:
+    - family: Fraunces
+      fonts:
+        - asset: assets/fonts/Fraunces.ttf
+    - family: InstrumentSans
+      fonts:
+        - asset: assets/fonts/InstrumentSans.ttf
+
   assets:
     - assets/data/stages.json
     - assets/data/recommendations.json

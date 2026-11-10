@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/offline_map_providers.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
+import '../utils/app_theme.dart';
 
 /// Card shown in the stage detail screen letting the user download the
 /// trail corridor tiles for offline use, see progress, and delete the
@@ -25,30 +26,69 @@ class OfflineDownloadCard extends ConsumerWidget {
     final state = ref.watch(offlineMapControllerProvider(args));
     final controller = ref.read(offlineMapControllerProvider(args).notifier);
 
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.download_for_offline_outlined,
-                  color: AppColors.green,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  S.offlineSectionTitle,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                ),
-              ],
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.night,
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.sun,
+              shape: const StadiumBorder(),
             ),
-            const SizedBox(height: 10),
-            _buildBody(context, state, controller),
-          ],
+          ),
+          progressIndicatorTheme: ProgressIndicatorThemeData(
+            color: AppColors.sun,
+            linearTrackColor: Colors.white.withValues(alpha: 0.14),
+            linearMinHeight: 6,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.sun,
+              foregroundColor: AppColors.night,
+              elevation: 0,
+              shape: const StadiumBorder(),
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+            ),
+          ),
+        ),
+        child: DefaultTextStyle.merge(
+          style: const TextStyle(color: AppColors.cream),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.sun.withValues(alpha: 0.16),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.download_for_offline_rounded,
+                      color: AppColors.sun,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      S.offlineSectionTitle,
+                      style: displayStyle(19, color: AppColors.cream),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              _buildBody(context, state, controller),
+            ],
+          ),
         ),
       ),
     );
@@ -73,19 +113,19 @@ class OfflineDownloadCard extends ConsumerWidget {
           children: [
             const Text(
               S.offlineNotDownloaded,
-              style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white70,
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: controller.estimateAndDownload,
-                icon: const Icon(Icons.download, size: 16),
+                icon: const Icon(Icons.download_rounded, size: 16),
                 label: const Text(S.offlineDownloadButton),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.green,
-                  foregroundColor: Colors.white,
-                ),
               ),
             ),
           ],
@@ -126,7 +166,7 @@ class OfflineDownloadCard extends ConsumerWidget {
             const SizedBox(height: 4),
             Text(
               '${percent.toStringAsFixed(0)}% · ~$estimatedMb MB',
-              style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+              style: const TextStyle(fontSize: 12, color: Colors.white60),
             ),
             const SizedBox(height: 8),
             // UI/UX polish: buttons on their own Wrap-able row, left
@@ -164,14 +204,14 @@ class OfflineDownloadCard extends ConsumerWidget {
           children: [
             Text(
               S.offlineInterrupted,
-              style: const TextStyle(fontSize: 13, color: Colors.orange),
+              style: const TextStyle(fontSize: 13, color: AppColors.sun300),
             ),
             const SizedBox(height: 6),
             LinearProgressIndicator(value: resumePercent / 100),
             const SizedBox(height: 4),
             Text(
               '${resumePercent.toStringAsFixed(0)}% completă',
-              style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+              style: const TextStyle(fontSize: 12, color: Colors.white60),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -179,12 +219,8 @@ class OfflineDownloadCard extends ConsumerWidget {
               children: [
                 ElevatedButton.icon(
                   onPressed: controller.resumeInterrupted,
-                  icon: const Icon(Icons.download, size: 16),
+                  icon: const Icon(Icons.download_rounded, size: 16),
                   label: const Text(S.offlineResumeDownloadButton),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.green,
-                    foregroundColor: Colors.white,
-                  ),
                 ),
                 TextButton(
                   onPressed: controller.cancelAndDelete,
@@ -203,7 +239,11 @@ class OfflineDownloadCard extends ConsumerWidget {
               '${S.offlineComplete} '
               '(${state.cachedTileCount} tile-uri, '
               '~${state.cachedSizeMb.toStringAsFixed(1)} MB)',
-              style: const TextStyle(fontSize: 13, color: AppColors.green),
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.sun,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 4),
             Align(
@@ -222,7 +262,7 @@ class OfflineDownloadCard extends ConsumerWidget {
           children: [
             Text(
               state.errorMessage ?? S.offlineError,
-              style: const TextStyle(fontSize: 12, color: Colors.red),
+              style: const TextStyle(fontSize: 12, color: Color(0xFFFF9C94)),
             ),
             const SizedBox(height: 4),
             Align(

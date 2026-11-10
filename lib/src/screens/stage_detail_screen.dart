@@ -1,5 +1,6 @@
 // lib/src/screens/stage_detail_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/poi_model.dart';
@@ -9,6 +10,8 @@ import '../providers/providers.dart';
 import '../services/analytics_service.dart';
 import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
+import '../utils/app_theme.dart';
+import '../widgets/design.dart';
 import '../widgets/offline_download_card.dart';
 import '../widgets/poi_card.dart';
 import '../widgets/segment_badge.dart';
@@ -33,24 +36,35 @@ class StageDetailScreen extends ConsumerWidget {
 
     return trackAsync.when(
       loading: () => Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.green,
-          foregroundColor: Colors.white,
-          title: Text(stage.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        body: Stack(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(20),
+              child: SafeArea(child: Skeleton(height: 320, radius: 32)),
+            ),
+            Positioned(
+              top: MediaQuery.paddingOf(context).top + 8,
+              left: 16,
+              child: const _BackButton(),
+            ),
+          ],
         ),
-        body: const Center(child: CircularProgressIndicator()),
       ),
-      error: (e, _) => Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.green,
-          foregroundColor: Colors.white,
-          title: Text(stage.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-        ),
-        body: _StageDetailBody(stage: stage),
-      ),
+      error: (e, _) => _StageDetailBody(stage: stage),
       data: (_) => _StageDetailBody(stage: stage),
     );
   }
+}
+
+class _BackButton extends StatelessWidget {
+  const _BackButton();
+
+  @override
+  Widget build(BuildContext context) => GlassIconButton(
+    icon: Icons.arrow_back_ios_new_rounded,
+    tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+    onTap: () => Navigator.maybePop(context),
+  );
 }
 
 class _StageDetailBody extends ConsumerWidget {
@@ -64,74 +78,121 @@ class _StageDetailBody extends ConsumerWidget {
       progressProvider.select((ids) => ids.contains(stage.id)),
     );
 
+    final top = MediaQuery.paddingOf(context).top;
+    final pois = <(String, PoiType)>[
+      (S.sectionCazare, PoiType.cazare),
+      (S.sectionPopas, PoiType.popas),
+      (S.sectionObiective, PoiType.obiectiv),
+      (S.sectionRecomandari, PoiType.recomandare),
+    ];
+
     return Scaffold(
+      backgroundColor: AppColors.cream,
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         slivers: [
-          // ── App bar with map preview ─────────────────────────────────────
           SliverAppBar(
-            expandedHeight: 260,
+            expandedHeight: 380,
             pinned: true,
-            backgroundColor: AppColors.green,
-            foregroundColor: Colors.white,
-            title: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SegmentBadge(order: stage.order, size: 20),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    stage.name,
-                    style: const TextStyle(fontSize: 14),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
+            automaticallyImplyLeading: false,
+            backgroundColor: AppColors.night,
+            surfaceTintColor: Colors.transparent,
+            toolbarHeight: 64,
+            leadingWidth: 72,
+            leading: const Padding(
+              padding: EdgeInsets.only(left: 16),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: _BackButton(),
+              ),
             ),
-            flexibleSpace: FlexibleSpaceBar(
-              background: GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (_) => MapScreen(stage: stage),
-                  ),
-                ),
-                child: Stack(
+            flexibleSpace: LayoutBuilder(
+              builder: (context, c) {
+                final collapsedH = top + 64;
+                final t = ((c.maxHeight - collapsedH) / (380 - collapsedH))
+                    .clamp(0.0, 1.0);
+                return Stack(
                   fit: StackFit.expand,
                   children: [
-                    TrailMap(
-                      gpxAssetPath: stage.gpxFile,
-                      stageId: stage.id,
-                      compact: true,
-                      segmentColor: AppColors.colorForStageOrder(stage.order),
+                    Transform.translate(
+                      offset: Offset(0, (1 - t) * 40),
+                      child: Hero(
+                        tag: 'stage-cover-${stage.id}',
+                        child: Image.asset(
+                          stage.coverImage,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) =>
+                              Container(color: AppColors.earth),
+                        ),
+                      ),
                     ),
-                    // Tap hint overlay
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withValues(alpha: 0.45),
+                            Colors.transparent,
+                            AppColors.night.withValues(alpha: 0.92),
+                          ],
+                          stops: const [0, 0.4, 1],
+                        ),
+                      ),
+                    ),
+                    // Solid night scrim fades in as the header collapses.
+                    Opacity(
+                      opacity: (1 - t * 1.6).clamp(0.0, 1.0),
+                      child: const ColoredBox(color: AppColors.night),
+                    ),
                     Positioned(
-                      bottom: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                      top: top,
+                      left: 72,
+                      right: 24,
+                      height: 64,
+                      child: Opacity(
+                        opacity: (1 - t * 2.2).clamp(0.0, 1.0),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            stage.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: displayStyle(19, color: Colors.white),
+                          ),
                         ),
-                        decoration: BoxDecoration(
-                          color: Colors.black54,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
+                      ),
+                    ),
+                    Positioned(
+                      left: 24,
+                      right: 24,
+                      bottom: 48,
+                      child: Opacity(
+                        opacity: t,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
-                              Icons.open_in_full,
-                              color: Colors.white,
-                              size: 12,
+                            Row(
+                              children: [
+                                SegmentBadge(order: stage.order, size: 28),
+                                const SizedBox(width: 10),
+                                Flexible(
+                                  child: Eyebrow(
+                                    stage.difficulty,
+                                    color: AppColors.sun,
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(width: 4),
+                            const SizedBox(height: 12),
                             Text(
-                              'Hartă completă',
-                              style: TextStyle(
+                              stage.name,
+                              style: displayStyle(
+                                34,
                                 color: Colors.white,
-                                fontSize: 11,
+                                height: 1.08,
                               ),
                             ),
                           ],
@@ -139,83 +200,76 @@ class _StageDetailBody extends ConsumerWidget {
                       ),
                     ),
                   ],
-                ),
-              ),
+                );
+              },
             ),
           ),
 
-          // ── Content ───────────────────────────────────────────────────────
+          // Content sheet overlapping the hero
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Technical stats row
-                  _StatsRow(stage: stage),
-                  const SizedBox(height: 16),
-
-                  // Progress tracking (Faza 15 — local, no account)
-                  _CompletedToggle(
-                    isCompleted: isCompleted,
-                    onChanged: (value) {
-                      ref
-                          .read(progressProvider.notifier)
-                          .setCompleted(stage.id, value);
-                      // Faza 16: anonymous, stage-id-only usage signal.
-                      if (value) {
-                        AnalyticsService.logStageCompleted(stage.id);
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Offline map download
-                  OfflineDownloadCard(
-                    stageId: stage.id,
-                    gpxAssetPath: stage.gpxFile,
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Description
-                  _SectionTitle(S.sectionDescription),
-                  const SizedBox(height: 8),
-                  Text(
-                    stage.description.isNotEmpty
-                        ? stage.description
-                        : S.contentInProgress,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      height: 1.6,
-                      color: AppColors.textDark,
+            child: Transform.translate(
+              offset: const Offset(0, -28),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.cream,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                ),
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  24,
+                  20,
+                  MediaQuery.paddingOf(context).bottom + 32,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FadeSlideIn(child: _StatsRow(stage: stage)),
+                    const SizedBox(height: 16),
+                    FadeSlideIn(
+                      index: 1,
+                      child: _CompletedToggle(
+                        isCompleted: isCompleted,
+                        onChanged: (value) {
+                          HapticFeedback.mediumImpact();
+                          ref
+                              .read(progressProvider.notifier)
+                              .setCompleted(stage.id, value);
+                          if (value) {
+                            AnalyticsService.logStageCompleted(stage.id);
+                          }
+                        },
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
+                    const SizedBox(height: 28),
 
-                  // POI sections
-                  ..._buildPoiSection(
-                    S.sectionCazare,
-                    stage.pois.where((p) => p.type == PoiType.cazare).toList(),
-                  ),
-                  ..._buildPoiSection(
-                    S.sectionPopas,
-                    stage.pois.where((p) => p.type == PoiType.popas).toList(),
-                  ),
-                  ..._buildPoiSection(
-                    S.sectionObiective,
-                    stage.pois
-                        .where((p) => p.type == PoiType.obiectiv)
-                        .toList(),
-                  ),
-                  ..._buildPoiSection(
-                    S.sectionRecomandari,
-                    stage.pois
-                        .where((p) => p.type == PoiType.recomandare)
-                        .toList(),
-                  ),
+                    FadeSlideIn(index: 2, child: _MapPreview(stage: stage)),
+                    const SizedBox(height: 16),
+                    FadeSlideIn(
+                      index: 3,
+                      child: OfflineDownloadCard(
+                        stageId: stage.id,
+                        gpxAssetPath: stage.gpxFile,
+                      ),
+                    ),
+                    const SizedBox(height: 36),
 
-                  const SizedBox(height: 40),
-                ],
+                    _SectionTitle(S.sectionDescription),
+                    const SizedBox(height: 14),
+                    Text(
+                      stage.description.isNotEmpty
+                          ? stage.description
+                          : S.contentInProgress,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 36),
+
+                    for (final (title, type) in pois)
+                      ..._buildPoiSection(
+                        title,
+                        stage.pois.where((p) => p.type == type).toList(),
+                      ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -227,19 +281,98 @@ class _StageDetailBody extends ConsumerWidget {
   List<Widget> _buildPoiSection(String title, List<PoiModel> pois) {
     return [
       _SectionTitle(title),
-      const SizedBox(height: 8),
+      const SizedBox(height: 12),
       if (pois.isEmpty)
         Padding(
-          padding: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.only(bottom: 4),
           child: Text(
             S.noPois,
-            style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
           ),
         )
       else
         ...pois.map((p) => PoiCard(poi: p)),
-      const SizedBox(height: 20),
+      const SizedBox(height: 32),
     ];
+  }
+}
+
+class _MapPreview extends StatelessWidget {
+  final StageModel stage;
+  const _MapPreview({required this.stage});
+
+  @override
+  Widget build(BuildContext context) {
+    return PressableScale(
+      scale: 0.98,
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute<void>(builder: (_) => MapScreen(stage: stage)),
+      ),
+      child: Container(
+        height: 240,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.earth.withValues(alpha: 0.2),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+              spreadRadius: -8,
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              AbsorbPointer(
+                child: TrailMap(
+                  gpxAssetPath: stage.gpxFile,
+                  stageId: stage.id,
+                  compact: true,
+                  segmentColor: AppColors.colorForStageOrder(stage.order),
+                ),
+              ),
+              Positioned(
+                bottom: 12,
+                right: 12,
+                child: GlassContainer(
+                  radius: 30,
+                  blur: 16,
+                  dark: true,
+                  fillOpacity: 0.45,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 9,
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.open_in_full_rounded,
+                        color: Colors.white,
+                        size: 14,
+                      ),
+                      SizedBox(width: 6),
+                      Text(
+                        'Hartă completă',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -249,19 +382,25 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: AppColors.green,
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 28,
+          height: 3,
+          decoration: BoxDecoration(
+            color: AppColors.sun,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(text, style: displayStyle(26)),
+      ],
     );
   }
 }
 
-/// Faza 15 — checkbox to mark a stage as personally completed. Purely
-/// local (no account), backed by [progressProvider]/`HiveProgressRepository`.
+/// Local (no account) completed toggle backed by [progressProvider].
 class _CompletedToggle extends StatelessWidget {
   final bool isCompleted;
   final ValueChanged<bool> onChanged;
@@ -270,43 +409,60 @@ class _CompletedToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: isCompleted
-          ? AppColors.green.withValues(alpha: 0.1)
-          : AppColors.textMuted.withValues(alpha: 0.06),
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => onChanged(!isCompleted),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          child: Row(
-            children: [
-              Checkbox(
-                value: isCompleted,
-                activeColor: AppColors.green,
-                onChanged: (value) => onChanged(value ?? false),
-              ),
-              Expanded(
-                child: Text(
-                  isCompleted
-                      ? S.progressCompletedLabel
-                      : S.progressMarkCompleted,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: isCompleted ? AppColors.green : AppColors.textDark,
-                  ),
-                ),
-              ),
-              if (isCompleted)
-                const Icon(
-                  Icons.check_circle,
-                  color: AppColors.green,
-                  size: 20,
-                ),
-            ],
+    return PressableScale(
+      onTap: () => onChanged(!isCompleted),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        curve: AppFonts.expo,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: isCompleted ? AppColors.green : Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: isCompleted
+                ? AppColors.green
+                : AppColors.earth.withValues(alpha: 0.12),
           ),
+        ),
+        child: Row(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeOutBack,
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: isCompleted ? AppColors.sun : Colors.transparent,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isCompleted
+                      ? AppColors.sun
+                      : AppColors.earth.withValues(alpha: 0.35),
+                  width: 1.8,
+                ),
+              ),
+              child: isCompleted
+                  ? const Icon(
+                      Icons.check_rounded,
+                      size: 20,
+                      color: AppColors.night,
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                isCompleted
+                    ? S.progressCompletedLabel
+                    : S.progressMarkCompleted,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: isCompleted ? Colors.white : AppColors.night,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -319,39 +475,39 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.green.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(12),
+    final items = [
+      _Stat(
+        icon: Icons.straighten_rounded,
+        value: '${stage.distanceKm} km',
+        label: S.stageDistance,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _Stat(
-            icon: Icons.straighten,
-            value: '${stage.distanceKm} km',
-            label: S.stageDistance,
-          ),
-          _Stat(
-            icon: Icons.trending_up,
-            value: '+${stage.elevationGainM} m',
-            label: S.stageGain,
-            color: AppColors.green,
-          ),
-          _Stat(
-            icon: Icons.trending_down,
-            value: '-${stage.elevationLossM} m',
-            label: S.stageLoss,
-            color: AppColors.brown,
-          ),
-          _Stat(
-            icon: Icons.schedule,
-            value: stage.durationEstimate,
-            label: S.stageDuration,
-          ),
-        ],
+      _Stat(
+        icon: Icons.trending_up_rounded,
+        value: '+${stage.elevationGainM} m',
+        label: S.stageGain,
+        color: AppColors.green,
       ),
+      _Stat(
+        icon: Icons.trending_down_rounded,
+        value: '-${stage.elevationLossM} m',
+        label: S.stageLoss,
+        color: AppColors.brown,
+      ),
+      _Stat(
+        icon: Icons.schedule_rounded,
+        value: stage.durationEstimate,
+        label: S.stageDuration,
+        color: AppColors.sky,
+      ),
+    ];
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
+      childAspectRatio: 2.15,
+      children: items,
     );
   }
 }
@@ -366,28 +522,60 @@ class _Stat extends StatelessWidget {
     required this.icon,
     required this.value,
     required this.label,
-    this.color = AppColors.textDark,
+    this.color = AppColors.night,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(icon, color: color, size: 18),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 13,
-            color: color,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.earth.withValues(alpha: 0.08)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: Icon(icon, color: color, size: 20),
           ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 10, color: AppColors.textMuted),
-        ),
-      ],
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(value, style: displayStyle(19, height: 1.1)),
+                ),
+                const SizedBox(height: 2),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    label.toUpperCase(),
+                    maxLines: 1,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.2,
+                      color: AppColors.textMuted,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
