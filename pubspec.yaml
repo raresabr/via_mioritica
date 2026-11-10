@@ -48,11 +48,16 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   http: ^1.2.2
-  firebase_core: ^5.1.0
-  firebase_remote_config: ^7.0.1
+  # Firebase pinned to the 5.0.0/13.0.0/6.0.0/7.0.0 generation on purpose:
+  # it uses Firebase iOS SDK 12.19.0, the last one published on CocoaPods
+  # trunk. Newer patches (firebase_core 5.1.0 -> SDK 12.19.3) are SPM-only,
+  # and objectbox_flutter_libs still forces CocoaPods for iOS. Unpin once
+  # objectbox (via flutter_map_tile_caching) supports Swift Package Manager.
+  firebase_core: 5.0.0
+  firebase_remote_config: 7.0.0
   package_info_plus: ^10.2.1
-  firebase_crashlytics: ^6.0.1
-  firebase_analytics: ^13.0.1
+  firebase_crashlytics: 6.0.0
+  firebase_analytics: 13.0.0
   flutter_svg: ^2.2.1
 
 dev_dependencies:
@@ -69,7 +74,8 @@ dev_dependencies:
 # flutter_map_tile_caching pins objectbox ^4.1.0, whose 4.x AAR metadata
 # conflicts with newer transitive androidx deps (fails Android build with
 # "compiled against android-31" AAR metadata errors). Override to the
-# latest 5.x, which is API-compatible for our basic usage and fixes the
+# 5.0.x (5.1+ needs flat_buffers 25, which FMTC 10.1.1 rejects; same for
+# latlong2 0.10), which is API-compatible for our basic usage and fixes the
 # Android build. Remove this override once FMTC bumps its own constraint.
 dependency_overrides:
   objectbox: ^5.0.4
