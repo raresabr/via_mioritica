@@ -87,6 +87,9 @@ cp .env.example .env
 ```
 Get a **free** MapTiler API key at https://www.maptiler.com/ (100k tile loads/month free).
 
+A `--dart-define=MAPTILER_KEY=...` build argument takes precedence over `.env`
+(use it in CI/release builds).
+
 ### 4. Run on Android emulator
 ```bash
 flutter run
@@ -251,6 +254,41 @@ tab now renders all 3 stage polylines + legend correctly with no error.
 - `.env` is **gitignored** — never commit it
 - In CI: inject via `--dart-define=MAPTILER_KEY=$SECRET` instead of `.env`
 - Rotate key immediately if accidentally committed
+- A map tile key is inherently visible to the client (it is sent with every
+  tile request). Restrict it in the MapTiler dashboard (allowed apps/quota)
+- Android release signing: create `android/key.properties` (gitignored) with
+  `storeFile`, `storePassword`, `keyAlias`, `keyPassword`. Without it, release
+  builds fall back to the debug key (OK for App Distribution, **not** for
+  Google Play)
+
+---
+
+## Quality gates & CI
+
+```bash
+dart format --output=none --set-exit-if-changed lib test
+flutter analyze --fatal-infos     # strict-casts/inference/raw-types enabled
+flutter test --coverage
+```
+
+`.github/workflows/ci.yml` runs the same checks plus a debug Android build on
+every push/PR. Tests cover the cache-first loader (ETag/304/offline/malformed
+content), progress persistence (Hive in a temp dir), the offline-map controller,
+the bundled content (`assets/data/*.json`, every GPX parses, every referenced
+asset exists) and key screens.
+
+## Dependency notes
+
+- **State management**: Riverpod 3 (`Notifier`/`NotifierProvider`).
+- **Firebase** is pinned to `firebase_core 5.0.0` / `analytics 13.0.0` /
+  `crashlytics 6.0.0` / `remote_config 7.0.0` (iOS SDK 12.19.0): newer SDK
+  patches are no longer published to CocoaPods, and `objectbox_flutter_libs`
+  still requires CocoaPods on iOS. Unpin when SPM is possible.
+- **`latlong2` stays on 0.9.x and `objectbox` on 5.0.x** (see
+  `dependency_overrides` in `pubspec.yaml`) because `flutter_map_tile_caching`
+  10.1.1 constrains them.
+- Hosted content is validated (decoded) before being cached; a malformed file
+  never replaces a working cache and falls back to the bundled asset.
 
 ---
 
@@ -584,12 +622,18 @@ across tab switches) and 5 tabs, in this fixed order:
 
 1. **Despre Noi** (`AboutScreen`) — org content (placeholder for now) +
    `BrandFooter` linking to https://stag-line.com/.
-2. **Hartă traseu** (`FullTrailMapScreen`) — the *entire* trail, all stages
-   rendered simultaneously as colored polylines (`AppColors.colorForStageOrder`)
-   with a tap-through legend. This is distinct from the per-stage map reached
-   from "Ghidul Călătorului", which shows one segment with offline
-   download + live GPS. The full-trail map uses plain online tiles (no FMTC
-   override) — offline caching stays scoped per-stage.
+2. **Hartă traseu** (`FullTrailMapScreen`) — the main map: starts on all of
+   Romania and draws every documented stage (GPX) as a white-cased polyline in
+   the stage colour. A pill **Etape** button opens a sheet with all stages
+   (tap = zoom to that stage, or "Tot traseul documentat" to reset), plus a
+   location button, a scale bar and MapTiler/OSM attribution. Tiles seen here
+   are cached in the FMTC store `main_map`. This is distinct from the
+   per-stage map reached from "Ghidul Călătorului" (offline download + live
+   GPS).
+
+   **Adding a new stage to the map**: put the GPX in `assets/gpx/` and add an
+   entry to `assets/data/stages.json` — it appears on the main map
+   automatically (no code change).
 3. **Recomandări practice** (`RecommendationsScreen`) — general hiking-safety
    tips from `assets/data/recommendations.json`.
 4. **Ghidul Călătorului** (`StagesListScreen` → `StageDetailScreen` →
@@ -608,8 +652,8 @@ Each stage/segment gets a deterministic color from `AppColors.segmentPalette`,
 alternating **#870203** (dark red) / **#000000** (black) based on
 `stage.order` (`AppColors.colorForStageOrder(order)`), consistently across:
 
-- **Hartă traseu** (`FullTrailMapScreen`) — polyline per stage + legend
-  swatches.
+- **Hartă traseu** (`FullTrailMapScreen`) — polyline per stage, `E#` badges
+  and the stages sheet.
 - **Ghidul Călătorului** — `StageCard` top accent stripe (stage list) and
   the single-stage polyline in `TrailMap` (used by both `MapScreen` and the
   compact preview in `StageDetailScreen`), via the new `TrailMap.segmentColor`
@@ -757,7 +801,7 @@ Verified: `flutter analyze` clean (same 8 pre-existing infos),
 `flutter build apk --debug` and `flutter build ios --no-codesign --debug`
 both succeed. No new unit tests (Faza 22 explicitly deferred); no
 commit/push (user tests + commits manually).
-
+    
 ---
 
 ## Phase roadmap

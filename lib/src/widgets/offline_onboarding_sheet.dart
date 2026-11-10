@@ -19,7 +19,7 @@ class OfflineOnboardingSheet extends StatelessWidget {
   static Future<void> showIfFirstLaunch(BuildContext context) async {
     if (SettingsBox.hasSeenOfflineOnboarding) return;
     if (!context.mounted) return;
-    await showModalBottomSheet(
+    await showModalBottomSheet<void>(
       context: context,
       isDismissible: false,
       enableDrag: false,
@@ -41,8 +41,11 @@ class OfflineOnboardingSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.download_for_offline_outlined,
-                color: AppColors.green, size: 40),
+            const Icon(
+              Icons.download_for_offline_outlined,
+              color: AppColors.green,
+              size: 40,
+            ),
             const SizedBox(height: 12),
             const Text(
               S.offlineOnboardingTitle,

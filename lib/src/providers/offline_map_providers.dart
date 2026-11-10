@@ -76,33 +76,37 @@ class OfflineDownloadState {
 
 /// Manages the offline-download lifecycle (estimate -> download -> pause/
 /// resume/cancel -> delete) for a single stage's corridor tile store.
-class OfflineMapController extends StateNotifier<OfflineDownloadState> {
-  final OfflineMapRepository _repo;
-  final String stageId;
-  final String gpxAssetPath;
-  final Ref _ref;
-  StreamSubscription? _progressSub;
+class OfflineMapController extends Notifier<OfflineDownloadState> {
+  OfflineMapController(this._args);
+
+  final ({String stageId, String gpxAssetPath}) _args;
+  StreamSubscription<DownloadProgress>? _progressSub;
+
+  String get stageId => _args.stageId;
+  String get gpxAssetPath => _args.gpxAssetPath;
+  OfflineMapRepository get _repo => ref.read(offlineMapRepositoryProvider);
 
   /// Faza 21 — set by [_loadStats] when a failed (interrupted) download is
   /// found for this stage's store; consumed by [resumeInterrupted].
   RecoveredRegion? _pendingRecovery;
 
-  OfflineMapController(this._repo, this._ref, this.stageId, this.gpxAssetPath)
-    : super(const OfflineDownloadState(status: OfflineDownloadStatus.loading)) {
-    _loadStats();
+  @override
+  OfflineDownloadState build() {
+    ref.onDispose(() => _progressSub?.cancel());
+    unawaited(_loadStats());
+    return const OfflineDownloadState(status: OfflineDownloadStatus.loading);
   }
 
   Future<void> _loadStats() async {
     await _repo.ensureStoreExists(stageId);
     final stats = await _repo.getStats(stageId);
     final recovery = await _repo.getFailedRecovery(stageId);
+    if (!ref.mounted) return;
 
     if (recovery != null) {
       _pendingRecovery = recovery;
       final total = recovery.end;
-      final percent = total > 0
-          ? (recovery.start - 1) / total * 100
-          : 0.0;
+      final percent = total > 0 ? (recovery.start - 1) / total * 100 : 0.0;
       state = state.copyWith(
         status: OfflineDownloadStatus.interrupted,
         cachedTileCount: stats.tileCount,
@@ -145,15 +149,13 @@ class OfflineMapController extends StateNotifier<OfflineDownloadState> {
       unawaited(tileEvents.drain());
       _progressSub = downloadProgress.listen(
         (progress) {
-          state = state.copyWith(
-            progressPercent: progress.percentageProgress,
-          );
+          state = state.copyWith(progressPercent: progress.percentageProgress);
         },
         onDone: () async {
           _pendingRecovery = null;
           await _loadStats();
         },
-        onError: (e) {
+        onError: (Object e) {
           state = state.copyWith(
             status: OfflineDownloadStatus.error,
             errorMessage: e.toString(),
@@ -171,10 +173,8 @@ class OfflineMapController extends StateNotifier<OfflineDownloadState> {
   Future<void> estimateAndDownload() async {
     state = state.copyWith(status: OfflineDownloadStatus.estimating);
     try {
-      final points = await _ref.read(
-        trackPointsProvider(gpxAssetPath).future,
-      );
-      final region = _repo.buildCorridorRegion(points.cast());
+      final points = await ref.read(trackPointsProvider(gpxAssetPath).future);
+      final region = _repo.buildCorridorRegion(points);
       final tileCount = await _repo.countTiles(stageId, region);
       state = state.copyWith(
         status: OfflineDownloadStatus.downloading,
@@ -189,14 +189,12 @@ class OfflineMapController extends StateNotifier<OfflineDownloadState> {
       unawaited(tileEvents.drain());
       _progressSub = downloadProgress.listen(
         (progress) {
-          state = state.copyWith(
-            progressPercent: progress.percentageProgress,
-          );
+          state = state.copyWith(progressPercent: progress.percentageProgress);
         },
         onDone: () async {
           await _loadStats();
         },
-        onError: (e) {
+        onError: (Object e) {
           state = state.copyWith(
             status: OfflineDownloadStatus.error,
             errorMessage: e.toString(),
@@ -239,19 +237,11 @@ class OfflineMapController extends StateNotifier<OfflineDownloadState> {
     await _repo.deleteStore(stageId);
     await _loadStats();
   }
-
-  @override
-  void dispose() {
-    _progressSub?.cancel();
-    super.dispose();
-  }
 }
 
-final offlineMapControllerProvider = StateNotifierProvider.family<
-  OfflineMapController,
-  OfflineDownloadState,
-  ({String stageId, String gpxAssetPath})
->((ref, args) {
-  final repo = ref.watch(offlineMapRepositoryProvider);
-  return OfflineMapController(repo, ref, args.stageId, args.gpxAssetPath);
-});
+final offlineMapControllerProvider =
+    NotifierProvider.family<
+      OfflineMapController,
+      OfflineDownloadState,
+      ({String stageId, String gpxAssetPath})
+    >(OfflineMapController.new);

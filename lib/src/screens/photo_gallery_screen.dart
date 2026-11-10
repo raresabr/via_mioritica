@@ -7,7 +7,16 @@ import '../utils/app_colors.dart';
 import '../utils/app_strings.dart';
 
 /// null = no filter (show all photos).
-final _selectedStageFilterProvider = StateProvider<String?>((ref) => null);
+class _StageFilter extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void select(String? id) => state = id;
+}
+
+final _selectedStageFilterProvider = NotifierProvider<_StageFilter, String?>(
+  _StageFilter.new,
+);
 
 class PhotoGalleryScreen extends ConsumerWidget {
   const PhotoGalleryScreen({super.key});
@@ -31,20 +40,22 @@ class PhotoGalleryScreen extends ConsumerWidget {
               stages: stages,
               selectedStageId: selectedStageId,
               onSelect: (id) =>
-                  ref.read(_selectedStageFilterProvider.notifier).state = id,
+                  ref.read(_selectedStageFilterProvider.notifier).select(id),
             ),
             orElse: () => const SizedBox.shrink(),
           ),
           Expanded(
             child: photosAsync.when(
-              loading: () =>
-                  const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.error_outline,
-                        size: 48, color: AppColors.textMuted),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: AppColors.textMuted,
+                    ),
                     const SizedBox(height: 8),
                     const Text(S.errorLoad),
                   ],
@@ -54,8 +65,8 @@ class PhotoGalleryScreen extends ConsumerWidget {
                 final filtered = selectedStageId == null
                     ? photos
                     : photos
-                        .where((p) => p.stageId == selectedStageId)
-                        .toList();
+                          .where((p) => p.stageId == selectedStageId)
+                          .toList();
 
                 if (filtered.isEmpty) {
                   return const Center(
@@ -68,8 +79,7 @@ class PhotoGalleryScreen extends ConsumerWidget {
 
                 return GridView.builder(
                   padding: const EdgeInsets.all(8),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 4,
                     mainAxisSpacing: 4,
@@ -82,10 +92,12 @@ class PhotoGalleryScreen extends ConsumerWidget {
                       child: Image.asset(
                         photo.assetPath,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
+                        errorBuilder: (_, _, _) => Container(
                           color: AppColors.cream,
-                          child: const Icon(Icons.image_not_supported,
-                              color: AppColors.textMuted),
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            color: AppColors.textMuted,
+                          ),
                         ),
                       ),
                     );

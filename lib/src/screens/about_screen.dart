@@ -15,6 +15,7 @@ class AboutScreen extends ConsumerWidget {
     final aboutAsync = ref.watch(aboutContentProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.parchment,
       appBar: AppBar(
         title: const Text(S.navDespreNoi),
         backgroundColor: AppColors.green,
@@ -26,8 +27,11 @@ class AboutScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline,
-                  size: 48, color: AppColors.textMuted),
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: AppColors.textMuted,
+              ),
               const SizedBox(height: 8),
               const Text(S.errorLoad),
               const SizedBox(height: 16),
@@ -46,11 +50,10 @@ class AboutScreen extends ConsumerWidget {
             // leaving a visible margin on every side including the top.
             SliverToBoxAdapter(
               child: Image.asset(
-                'assets/images/main.jpg',
-                height: 200,
+                'assets/images/romania_map.webp',
                 width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                fit: BoxFit.fitWidth,
+                errorBuilder: (_, _, _) => Container(
                   height: 200,
                   color: AppColors.green,
                   child: const Center(
@@ -66,27 +69,41 @@ class AboutScreen extends ConsumerWidget {
                   const SizedBox(height: 20),
                   Text(
                     about.title.isNotEmpty ? about.title : S.appName,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold,
-                        color: AppColors.green),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Georgia',
+                      fontFamilyFallback: ['serif'],
+                      color: AppColors.segmentRed,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     about.body.isNotEmpty ? about.body : S.contentInProgress,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
-                        fontSize: 14, height: 1.6, color: AppColors.textDark),
+                      fontSize: 17,
+                      height: 1.6,
+                      fontFamily: 'Georgia',
+                      fontFamilyFallback: ['serif'],
+                      color: AppColors.textDark,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Center(
                     child: TextButton.icon(
                       onPressed: () => Navigator.push(
                         context,
-                        MaterialPageRoute(
+                        MaterialPageRoute<void>(
                           builder: (_) => const PrivacyPolicyScreen(),
                         ),
                       ),
-                      icon: const Icon(Icons.privacy_tip_outlined,
-                          size: 18, color: AppColors.textMuted),
+                      icon: const Icon(
+                        Icons.privacy_tip_outlined,
+                        size: 18,
+                        color: AppColors.textMuted,
+                      ),
                       label: const Text(
                         S.privacyPolicyLinkLabel,
                         style: TextStyle(

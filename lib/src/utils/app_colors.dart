@@ -6,6 +6,8 @@ class AppColors {
   static const greenLight = Color(0xFF52B788);
   static const brown = Color(0xFF795548);
   static const cream = Color(0xFFF5F1E9);
+  static const parchment = Color(0xFFEBD4A9);
+  static const segmentRed = Color(0xFF870203);
   static const textDark = Color(0xFF1B1B1B);
   static const textMuted = Color(0xFF6B6B6B);
 
@@ -31,4 +33,3 @@ class AppColors {
   /// alone. `E` = "Etapa" (Romanian for "Stage").
   static String shortCodeForStageOrder(int order) => 'E${order + 1}';
 }
-

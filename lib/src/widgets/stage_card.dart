@@ -53,9 +53,7 @@ class StageCard extends StatelessWidget {
             )
           : null,
       color: isCompleted ? AppColors.green.withValues(alpha: 0.05) : null,
-      shadowColor: isCompleted
-          ? AppColors.green.withValues(alpha: 0.4)
-          : null,
+      shadowColor: isCompleted ? AppColors.green.withValues(alpha: 0.4) : null,
       elevation: isCompleted ? 3 : 1,
       child: InkWell(
         onTap: onTap,
@@ -82,8 +80,11 @@ class StageCard extends StatelessWidget {
                     errorBuilder: (ctx, err, _) => Container(
                       color: Colors.grey.shade200,
                       child: Center(
-                        child: Icon(Icons.landscape,
-                            size: 48, color: Colors.grey.shade400),
+                        child: Icon(
+                          Icons.landscape,
+                          size: 48,
+                          color: Colors.grey.shade400,
+                        ),
                       ),
                     ),
                   ),
@@ -117,9 +118,13 @@ class StageCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(stage.name,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(
+                    stage.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -146,7 +151,9 @@ class StageCard extends StatelessWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: _difficultyColor().withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(12),
@@ -154,18 +161,26 @@ class StageCard extends StatelessWidget {
                         child: Text(
                           stage.difficulty,
                           style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: _difficultyColor()),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: _difficultyColor(),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Icon(Icons.schedule,
-                          size: 13, color: AppColors.textMuted),
+                      Icon(
+                        Icons.schedule,
+                        size: 13,
+                        color: AppColors.textMuted,
+                      ),
                       const SizedBox(width: 2),
-                      Text(stage.durationEstimate,
-                          style: const TextStyle(
-                              fontSize: 12, color: AppColors.textMuted)),
+                      Text(
+                        stage.durationEstimate,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textMuted,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -191,11 +206,11 @@ class _CompletedBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: isCompleted
-          ? S.progressUnmarkSemantics
-          : S.progressMarkSemantics,
+      label: isCompleted ? S.progressUnmarkSemantics : S.progressMarkSemantics,
       child: Material(
-        color: isCompleted ? AppColors.green : Colors.white.withValues(alpha: 0.85),
+        color: isCompleted
+            ? AppColors.green
+            : Colors.white.withValues(alpha: 0.85),
         shape: const CircleBorder(),
         elevation: 2,
         child: InkWell(
@@ -233,13 +248,15 @@ class _StatChip extends StatelessWidget {
       children: [
         Icon(icon, size: 14, color: color),
         const SizedBox(width: 2),
-        Text(label,
-            style: TextStyle(
-                fontSize: 12, color: color, fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: color,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
 }
-
-
-

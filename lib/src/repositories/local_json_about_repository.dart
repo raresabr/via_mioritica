@@ -1,26 +1,19 @@
 // lib/src/repositories/local_json_about_repository.dart
-import 'dart:convert';
-import 'package:flutter/services.dart';
 import '../models/about_content_model.dart';
-import '../utils/cache_first_loader.dart';
 import '../utils/content_config.dart';
+import '../utils/json_utils.dart';
 import 'about_repository.dart';
+import 'json_content_repository.dart';
 
 class LocalJsonAboutRepository implements AboutRepository {
-  AboutContentModel? _cache;
+  late final JsonContentRepository<AboutContentModel> _content =
+      JsonContentRepository<AboutContentModel>.fromAsset(
+        cacheKey: 'about',
+        hostedUrl: ContentConfig.hostedUrlFor('about.json'),
+        assetPath: 'assets/data/about.json',
+        decode: (raw) => AboutContentModel.fromJson(asStringKeyedMap(raw)),
+      );
 
   @override
-  Future<AboutContentModel> loadAboutContent() async {
-    if (_cache != null) return _cache!;
-    final raw = await CacheFirstLoader.load(
-      cacheKey: 'about',
-      hostedUrl: ContentConfig.hostedUrlFor('about.json'),
-      loadFromBundledAsset: () async {
-        final jsonStr = await rootBundle.loadString('assets/data/about.json');
-        return json.decode(jsonStr);
-      },
-    );
-    _cache = AboutContentModel.fromJson(asStringKeyedMap(raw));
-    return _cache!;
-  }
+  Future<AboutContentModel> loadAboutContent() => _content.load();
 }

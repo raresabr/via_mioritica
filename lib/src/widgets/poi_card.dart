@@ -42,13 +42,17 @@ class PoiCard extends StatelessWidget {
           backgroundColor: _iconColor().withValues(alpha: 0.12),
           child: Icon(_icon(), color: _iconColor(), size: 20),
         ),
-        title: Text(poi.name,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+        title: Text(
+          poi.name,
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+        ),
         subtitle: poi.description.isNotEmpty
-            ? Text(poi.description,
+            ? Text(
+                poi.description,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 12))
+                style: const TextStyle(fontSize: 12),
+              )
             : null,
         onTap: () => _showDetail(context),
       ),
@@ -56,11 +60,12 @@ class PoiCard extends StatelessWidget {
   }
 
   void _showDetail(BuildContext context) {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (_) => DraggableScrollableSheet(
         initialChildSize: 0.4,
         minChildSize: 0.25,
@@ -83,15 +88,21 @@ class PoiCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Row(children: [
-                Icon(_icon(), color: _iconColor()),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(poi.name,
+              Row(
+                children: [
+                  Icon(_icon(), color: _iconColor()),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      poi.name,
                       style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
-                ),
-              ]),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 12),
               if (poi.description.isNotEmpty) Text(poi.description),
               if (poi.photos.isNotEmpty) ...[
@@ -104,8 +115,11 @@ class PoiCard extends StatelessWidget {
                     separatorBuilder: (_, index) => const SizedBox(width: 8),
                     itemBuilder: (_, i) => ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(poi.photos[i],
-                        width: 220, fit: BoxFit.cover),
+                      child: Image.asset(
+                        poi.photos[i],
+                        width: 220,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
@@ -117,6 +131,3 @@ class PoiCard extends StatelessWidget {
     );
   }
 }
-
-
-

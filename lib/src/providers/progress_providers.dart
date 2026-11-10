@@ -1,4 +1,6 @@
 // lib/src/providers/progress_providers.dart
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../repositories/hive_progress_repository.dart';
 import '../repositories/local_progress_repository.dart';
@@ -10,18 +12,22 @@ final localProgressRepositoryProvider = Provider<LocalProgressRepository>((
 });
 
 /// Set of completed stage IDs, held in memory and kept in sync with Hive.
-/// A plain `StateNotifier<Set<String>>` (not a `FutureProvider`) so every
+/// A plain `Notifier<Set<String>>` (not a `FutureProvider`) so every
 /// screen watching it (list badge %, detail-screen checkbox) rebuilds
 /// instantly on toggle, without waiting on a re-fetch.
-class ProgressController extends StateNotifier<Set<String>> {
-  final LocalProgressRepository _repo;
+class ProgressController extends Notifier<Set<String>> {
+  LocalProgressRepository get _repo =>
+      ref.read(localProgressRepositoryProvider);
 
-  ProgressController(this._repo) : super(const {}) {
-    _load();
+  @override
+  Set<String> build() {
+    unawaited(_load());
+    return const <String>{};
   }
 
   Future<void> _load() async {
-    state = await _repo.loadCompletedStageIds();
+    final loaded = await _repo.loadCompletedStageIds();
+    if (ref.mounted) state = loaded;
   }
 
   bool isCompleted(String stageId) => state.contains(stageId);
@@ -41,7 +47,6 @@ class ProgressController extends StateNotifier<Set<String>> {
       setCompleted(stageId, !isCompleted(stageId));
 }
 
-final progressProvider =
-    StateNotifierProvider<ProgressController, Set<String>>((ref) {
-  return ProgressController(ref.watch(localProgressRepositoryProvider));
-});
+final progressProvider = NotifierProvider<ProgressController, Set<String>>(
+  ProgressController.new,
+);

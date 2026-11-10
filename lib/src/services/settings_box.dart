@@ -1,5 +1,5 @@
 // lib/src/services/settings_box.dart
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 /// Small Hive box for one-off local app-state flags (Faza 20: has the user
 /// already seen the offline-download onboarding tip?). Deliberately
@@ -9,7 +9,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 /// content cache clear).
 class SettingsBox {
   static const String boxName = 'app_settings';
-  static Box? _box;
+  static Box<dynamic>? _box;
 
   static const String keyHasSeenOfflineOnboarding =
       'has_seen_offline_onboarding';
@@ -21,10 +21,10 @@ class SettingsBox {
     // `Hive.initFlutter()` is idempotent — already called elsewhere, but
     // repeating it here keeps this class self-contained/safe standalone.
     await Hive.initFlutter();
-    _box = await Hive.openBox(boxName);
+    _box = await Hive.openBox<dynamic>(boxName);
   }
 
-  static Box get instance {
+  static Box<dynamic> get instance {
     final box = _box;
     if (box == null) {
       throw StateError(

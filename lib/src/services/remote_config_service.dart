@@ -38,8 +38,7 @@ class RemoteConfigService {
   // Placeholder store URLs — update once the app is actually published.
   static const _defaultAndroidStoreUrl =
       'https://play.google.com/store/apps/details?id=ro.viamioritica.via_mioritica';
-  static const _defaultIosStoreUrl =
-      'https://apps.apple.com/app/id0000000000';
+  static const _defaultIosStoreUrl = 'https://apps.apple.com/app/id0000000000';
 
   /// Fetches and activates Remote Config. Safe to call once, on app start,
   /// before the first screen decides whether to show the force-update gate.
@@ -82,17 +81,16 @@ class RemoteConfigService {
   /// `false` if it wasn't (fail open, never fail closed).
   static bool get isForceUpdateRequired {
     if (!_initialised) return false;
-    final minBuild = int.tryParse(
-          _remoteConfig.getString(_keyMinBuildNumber),
-        ) ??
+    final minBuild =
+        int.tryParse(_remoteConfig.getString(_keyMinBuildNumber)) ??
         _currentBuildNumber;
     return _currentBuildNumber < minBuild;
   }
 
   static String get forceUpdateMessage =>
       _initialised && _remoteConfig.getString(_keyForceUpdateMessage).isNotEmpty
-          ? _remoteConfig.getString(_keyForceUpdateMessage)
-          : _defaultForceUpdateMessage;
+      ? _remoteConfig.getString(_keyForceUpdateMessage)
+      : _defaultForceUpdateMessage;
 
   /// Store URL for the current platform — used by the "Actualizează acum"
   /// button on [ForceUpdateScreen].

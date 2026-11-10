@@ -38,7 +38,10 @@ class StageModel {
     this.order = 0,
   });
 
-  factory StageModel.fromJson(Map<String, dynamic> json, {int fallbackOrder = 0}) {
+  factory StageModel.fromJson(
+    Map<String, dynamic> json, {
+    int fallbackOrder = 0,
+  }) {
     final poisJson = json['pois'] as List? ?? [];
     return StageModel(
       id: json['id'] as String,
@@ -60,5 +63,3 @@ class StageModel {
     );
   }
 }
-
-

@@ -5,18 +5,19 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:flutter_test/flutter_test.dart';
 import 'package:via_mioritica/main.dart' show ViaMioriticaApp;
+import 'package:via_mioritica/src/screens/splash_screen.dart';
 
 void main() {
-  testWidgets('App smoke test – renders without crashing',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(
-      const ProviderScope(child: ViaMioriticaApp()),
-    );
-    // App title appears in the app bar
-    expect(find.text('Via Mioritica'), findsOneWidget);
+  testWidgets('App smoke test – renders without crashing', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const ProviderScope(child: ViaMioriticaApp()));
+    expect(find.byType(SplashScreen), findsOneWidget);
+    // Unmount so the splash navigation timer is cancelled.
+    await tester.pumpWidget(const SizedBox());
   });
 }

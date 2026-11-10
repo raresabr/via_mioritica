@@ -2,10 +2,18 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MapConfig {
+  static const String _definedKey = String.fromEnvironment('MAPTILER_KEY');
+
+  /// `--dart-define=MAPTILER_KEY=...` (CI/release) wins over the local `.env`
+  /// file (dev). Never hardcode the key in source.
+  static String get maptilerKey {
+    if (_definedKey.isNotEmpty) return _definedKey;
+    return dotenv.maybeGet('MAPTILER_KEY') ?? '';
+  }
+
   /// MapTiler Outdoor tile URL template.
-  /// API key loaded from .env (MAPTILER_KEY) – never hardcode in source.
   static String get tileUrl {
-    final key = dotenv.maybeGet('MAPTILER_KEY') ?? '';
+    final key = maptilerKey;
     return 'https://api.maptiler.com/maps/outdoor/{z}/{x}/{y}.png?key=$key';
   }
 
@@ -14,6 +22,10 @@ class MapConfig {
       '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
   static const int minZoom = 8;
+
+  /// The main map shows all of Romania, which needs a much lower zoom than the
+  /// per-stage maps.
+  static const double mainMapMinZoom = 5.5;
   static const int maxZoom = 17;
 
   /// Zoom levels to cache for offline use (corridor download).
@@ -30,4 +42,3 @@ class MapConfig {
   /// instead of the whole country.
   static const double corridorBufferMeters = 3000;
 }
-

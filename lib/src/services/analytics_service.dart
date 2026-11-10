@@ -1,6 +1,7 @@
 // lib/src/services/analytics_service.dart
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 /// Faza 16 — usage analytics via Firebase Analytics.
 ///
@@ -15,10 +16,16 @@ class AnalyticsService {
 
   static final FirebaseAnalytics instance = FirebaseAnalytics.instance;
 
-  /// Attach to `MaterialApp.navigatorObservers` for automatic screen_view
-  /// events on every named route/screen push.
-  static final FirebaseAnalyticsObserver observer =
-      FirebaseAnalyticsObserver(analytics: instance);
+  /// Returns the Firebase observer when Firebase is initialized; otherwise
+  /// returns a no-op observer so the UI remains renderable in tests and
+  /// during a failed/offline startup.
+  static NavigatorObserver get observer {
+    try {
+      return FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance);
+    } catch (_) {
+      return NavigatorObserver();
+    }
+  }
 
   /// Disabled in debug builds for the same reason as Crashlytics (Faza
   /// 16): local dev/hot-reload sessions shouldn't skew real usage data.

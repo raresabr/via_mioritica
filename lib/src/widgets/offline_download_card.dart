@@ -34,8 +34,11 @@ class OfflineDownloadCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.download_for_offline_outlined,
-                    color: AppColors.green, size: 20),
+                const Icon(
+                  Icons.download_for_offline_outlined,
+                  color: AppColors.green,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 const Text(
                   S.offlineSectionTitle,
@@ -98,8 +101,7 @@ class OfflineDownloadCard extends ConsumerWidget {
             ),
             SizedBox(width: 10),
             Expanded(
-              child: Text(S.offlineEstimating,
-                  style: TextStyle(fontSize: 13)),
+              child: Text(S.offlineEstimating, style: TextStyle(fontSize: 13)),
             ),
           ],
         );
@@ -124,8 +126,7 @@ class OfflineDownloadCard extends ConsumerWidget {
             const SizedBox(height: 4),
             Text(
               '${percent.toStringAsFixed(0)}% · ~$estimatedMb MB',
-              style: const TextStyle(
-                  fontSize: 12, color: AppColors.textMuted),
+              style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
             ),
             const SizedBox(height: 8),
             // UI/UX polish: buttons on their own Wrap-able row, left
@@ -170,8 +171,7 @@ class OfflineDownloadCard extends ConsumerWidget {
             const SizedBox(height: 4),
             Text(
               '${resumePercent.toStringAsFixed(0)}% completă',
-              style: const TextStyle(
-                  fontSize: 12, color: AppColors.textMuted),
+              style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
             ),
             const SizedBox(height: 8),
             Wrap(
