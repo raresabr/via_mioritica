@@ -72,7 +72,9 @@ class CacheFirstLoader {
     String? etag,
   ) async {
     try {
-      final headers = <String, String>{if (etag != null) 'If-None-Match': etag};
+      final headers = etag == null
+          ? <String, String>{}
+          : <String, String>{'If-None-Match': etag};
       final response = await http
           .get(Uri.parse(hostedUrl), headers: headers)
           .timeout(ContentConfig.networkTimeout);

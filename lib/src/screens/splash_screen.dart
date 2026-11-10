@@ -6,6 +6,7 @@ import '../services/remote_config_service.dart';
 import '../utils/app_colors.dart';
 import 'force_update_screen.dart';
 import 'root_nav_screen.dart';
+import 'dart:async';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,6 +19,7 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnim;
+  Timer? _navigationTimer;
 
   @override
   void initState() {
@@ -33,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    Future.delayed(const Duration(milliseconds: 2400), () {
+    _navigationTimer = Timer(const Duration(milliseconds: 2400), () {
       if (!mounted) return;
       // Faza 14: force-update gate — Remote Config was already fetched in
       // main() before runApp(), so this is a synchronous, instant check.
@@ -48,8 +50,8 @@ class _SplashScreenState extends State<SplashScreen>
           : const RootNavScreen();
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) => destination,
-          transitionsBuilder: (_, anim, __, child) =>
+          pageBuilder: (_, _, _) => destination,
+          transitionsBuilder: (_, anim, _, child) =>
               FadeTransition(opacity: anim, child: child),
           transitionDuration: const Duration(milliseconds: 500),
         ),
@@ -59,6 +61,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
+    _navigationTimer?.cancel();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _controller.dispose();
     super.dispose();

@@ -757,7 +757,7 @@ Verified: `flutter analyze` clean (same 8 pre-existing infos),
 `flutter build apk --debug` and `flutter build ios --no-codesign --debug`
 both succeed. No new unit tests (Faza 22 explicitly deferred); no
 commit/push (user tests + commits manually).
-
+    
 ---
 
 ## Phase roadmap

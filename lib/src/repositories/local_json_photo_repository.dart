@@ -1,33 +1,27 @@
 // lib/src/repositories/local_json_photo_repository.dart
-import 'dart:convert';
-import 'package:flutter/services.dart';
 import '../models/photo_model.dart';
-import '../utils/cache_first_loader.dart';
 import '../utils/content_config.dart';
+import 'json_content_repository.dart';
 import 'photo_repository.dart';
+import '../utils/json_utils.dart';
 
 class LocalJsonPhotoRepository implements PhotoRepository {
-  List<PhotoModel>? _cache;
+  late final JsonContentRepository<List<PhotoModel>> _content =
+      JsonContentRepository<List<PhotoModel>>.fromAsset(
+        cacheKey: 'photos',
+        hostedUrl: ContentConfig.hostedUrlFor('photos.json'),
+        assetPath: 'assets/data/photos.json',
+        decode: (raw) => (raw as List<dynamic>)
+            .map((e) => PhotoModel.fromJson(asStringKeyedMap(e)))
+            .toList(),
+      );
 
   @override
-  Future<List<PhotoModel>> loadPhotos() async {
-    if (_cache != null) return _cache!;
-    final raw = await CacheFirstLoader.load(
-      cacheKey: 'photos',
-      hostedUrl: ContentConfig.hostedUrlFor('photos.json'),
-      loadFromBundledAsset: () async {
-        final jsonStr = await rootBundle.loadString('assets/data/photos.json');
-        return json.decode(jsonStr);
-      },
-    );
-    final jsonList = raw as List<dynamic>;
-    _cache = jsonList.map((e) => PhotoModel.fromJson(asStringKeyedMap(e))).toList();
-    return _cache!;
-  }
+  Future<List<PhotoModel>> loadPhotos() => _content.load();
 
   @override
   Future<List<PhotoModel>> loadPhotosForStage(String stageId) async {
     final all = await loadPhotos();
-    return all.where((p) => p.stageId == stageId).toList();
+    return all.where((photo) => photo.stageId == stageId).toList();
   }
 }

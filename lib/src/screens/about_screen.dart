@@ -50,7 +50,7 @@ class AboutScreen extends ConsumerWidget {
                 height: 200,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   height: 200,
                   color: AppColors.green,
                   child: const Center(
