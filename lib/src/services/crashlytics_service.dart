@@ -23,11 +23,13 @@ class CrashlyticsService {
   /// normally, it just won't have crash reporting for that session.
   static Future<void> init() async {
     try {
-      await FirebaseCrashlytics.instance
-          .setCrashlyticsCollectionEnabled(!kDebugMode);
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+        !kDebugMode,
+      );
 
       // Flutter framework errors (widget build/layout/paint errors).
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+      FlutterError.onError =
+          FirebaseCrashlytics.instance.recordFlutterFatalError;
 
       // Anything else uncaught (async errors, platform channel errors)
       // outside the Flutter framework's own error zone.

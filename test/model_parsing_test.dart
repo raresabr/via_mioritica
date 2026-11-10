@@ -22,7 +22,7 @@ void main() {
           'name': 'Popas',
           'lat': 46.1,
           'lon': 23.2,
-          'photos': [],
+          'photos': <String>[],
         },
       ],
     }, fallbackOrder: 3);

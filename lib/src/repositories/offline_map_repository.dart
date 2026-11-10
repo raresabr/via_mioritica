@@ -57,21 +57,20 @@ class OfflineMapRepository {
   }
 
   /// Rough download-size estimate in MB, based on average tile size.
-  double estimateSizeMb(int tileCount) =>
-      (tileCount * _kAvgTileSizeKiB) / 1024;
+  double estimateSizeMb(int tileCount) => (tileCount * _kAvgTileSizeKiB) / 1024;
 
   /// Starts (or resumes, via FMTC's built-in recovery) the corridor
   /// download for a stage. Returns the two output streams FMTC exposes:
   /// overall progress and per-tile events.
   ({Stream<DownloadProgress> downloadProgress, Stream<TileEvent> tileEvents})
   startDownload(String stageId, DownloadableRegion region) {
-    return FMTCStore(storeName(stageId)).download.startForeground(
-      region: region,
-    );
+    return FMTCStore(
+      storeName(stageId),
+    ).download.startForeground(region: region);
   }
 
   Future<void> pauseDownload(String stageId) async {
-    FMTCStore(storeName(stageId)).download.pause();
+    await FMTCStore(storeName(stageId)).download.pause();
   }
 
   Future<void> resumeDownload(String stageId) async {

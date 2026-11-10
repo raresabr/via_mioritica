@@ -37,14 +37,16 @@ class PhotoGalleryScreen extends ConsumerWidget {
           ),
           Expanded(
             child: photosAsync.when(
-              loading: () =>
-                  const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.error_outline,
-                        size: 48, color: AppColors.textMuted),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: AppColors.textMuted,
+                    ),
                     const SizedBox(height: 8),
                     const Text(S.errorLoad),
                   ],
@@ -54,8 +56,8 @@ class PhotoGalleryScreen extends ConsumerWidget {
                 final filtered = selectedStageId == null
                     ? photos
                     : photos
-                        .where((p) => p.stageId == selectedStageId)
-                        .toList();
+                          .where((p) => p.stageId == selectedStageId)
+                          .toList();
 
                 if (filtered.isEmpty) {
                   return const Center(
@@ -68,8 +70,7 @@ class PhotoGalleryScreen extends ConsumerWidget {
 
                 return GridView.builder(
                   padding: const EdgeInsets.all(8),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     crossAxisSpacing: 4,
                     mainAxisSpacing: 4,
@@ -84,8 +85,10 @@ class PhotoGalleryScreen extends ConsumerWidget {
                         fit: BoxFit.cover,
                         errorBuilder: (_, _, _) => Container(
                           color: AppColors.cream,
-                          child: const Icon(Icons.image_not_supported,
-                              color: AppColors.textMuted),
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            color: AppColors.textMuted,
+                          ),
                         ),
                       ),
                     );

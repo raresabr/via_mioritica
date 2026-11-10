@@ -9,7 +9,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 /// so no Hive `TypeAdapter` codegen is needed for `StageModel` etc.
 class ContentCacheBox {
   static const String boxName = 'content_cache';
-  static Box? _box;
+  static Box<dynamic>? _box;
 
   /// Must be called once before any repository reads/writes the cache
   /// (done in `main.dart`, alongside the FMTC init).
@@ -20,10 +20,10 @@ class ContentCacheBox {
     } else {
       await Hive.initFlutter();
     }
-    _box = await Hive.openBox(boxName);
+    _box = await Hive.openBox<dynamic>(boxName);
   }
 
-  static Box get instance {
+  static Box<dynamic> get instance {
     final box = _box;
     if (box == null) {
       throw StateError(

@@ -1,9 +1,9 @@
 // lib/src/repositories/local_json_recommendation_repository.dart
 import '../models/recommendation_model.dart';
 import '../utils/content_config.dart';
+import '../utils/json_utils.dart';
 import 'json_content_repository.dart';
 import 'recommendation_repository.dart';
-import '../utils/json_utils.dart';
 
 class LocalJsonRecommendationRepository implements RecommendationRepository {
   late final JsonContentRepository<List<RecommendationModel>> _content =

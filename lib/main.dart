@@ -61,11 +61,7 @@ Future<void> main() async {
   // flags, e.g. "has the offline-download onboarding tip been shown?").
   await SettingsBox.init();
 
-  runApp(
-    const ProviderScope(
-      child: ViaMioriticaApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: ViaMioriticaApp()));
 }
 
 class ViaMioriticaApp extends StatelessWidget {

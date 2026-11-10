@@ -30,4 +30,3 @@ class MapConfig {
   /// instead of the whole country.
   static const double corridorBufferMeters = 3000;
 }
-

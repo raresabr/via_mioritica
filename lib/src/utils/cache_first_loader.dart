@@ -1,4 +1,5 @@
 // lib/src/utils/cache_first_loader.dart
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../services/content_cache_box.dart';
@@ -42,7 +43,9 @@ class CacheFirstLoader {
 
     if (entry is Map && entry.containsKey('data')) {
       // Cache-first: return instantly, revalidate quietly in the background.
-      _revalidateInBackground(cacheKey, hostedUrl, entry['etag'] as String?);
+      unawaited(
+        _revalidateInBackground(cacheKey, hostedUrl, entry['etag'] as String?),
+      );
       return entry['data'];
     }
 

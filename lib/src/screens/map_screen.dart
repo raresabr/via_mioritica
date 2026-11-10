@@ -37,7 +37,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   }
 
   Future<void> _startLocationTracking() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) return;
 
     LocationPermission permission = await Geolocator.checkPermission();
@@ -51,18 +51,19 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       return;
     }
 
-    _positionSub = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        distanceFilter: 10, // update every 10 metres
-      ),
-    ).listen((pos) {
-      if (mounted) {
-        setState(() {
-          _userLocation = LatLng(pos.latitude, pos.longitude);
+    _positionSub =
+        Geolocator.getPositionStream(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            distanceFilter: 10, // update every 10 metres
+          ),
+        ).listen((pos) {
+          if (mounted) {
+            setState(() {
+              _userLocation = LatLng(pos.latitude, pos.longitude);
+            });
+          }
         });
-      }
-    });
   }
 
   @override
@@ -75,8 +76,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             SegmentBadge(order: widget.stage.order, size: 20),
             const SizedBox(width: 8),
             Flexible(
-              child: Text(widget.stage.name,
-                  maxLines: 1, overflow: TextOverflow.ellipsis),
+              child: Text(
+                widget.stage.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ],
         ),
@@ -104,8 +108,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   padding: const EdgeInsets.all(12),
                   child: Row(
                     children: [
-                      const Icon(Icons.location_off,
-                          color: AppColors.brown, size: 20),
+                      const Icon(
+                        Icons.location_off,
+                        color: AppColors.brown,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       const Expanded(
                         child: Text(
@@ -123,4 +130,3 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     );
   }
 }
-

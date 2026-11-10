@@ -1,9 +1,9 @@
 // lib/src/repositories/local_json_photo_repository.dart
 import '../models/photo_model.dart';
 import '../utils/content_config.dart';
+import '../utils/json_utils.dart';
 import 'json_content_repository.dart';
 import 'photo_repository.dart';
-import '../utils/json_utils.dart';
 
 class LocalJsonPhotoRepository implements PhotoRepository {
   late final JsonContentRepository<List<PhotoModel>> _content =

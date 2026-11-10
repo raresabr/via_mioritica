@@ -144,4 +144,3 @@ class S {
       'drum.';
   static const offlineOnboardingButton = 'Am înțeles';
 }
-

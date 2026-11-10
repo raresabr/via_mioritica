@@ -41,7 +41,8 @@ class ProgressController extends StateNotifier<Set<String>> {
       setCompleted(stageId, !isCompleted(stageId));
 }
 
-final progressProvider =
-    StateNotifierProvider<ProgressController, Set<String>>((ref) {
-  return ProgressController(ref.watch(localProgressRepositoryProvider));
-});
+final progressProvider = StateNotifierProvider<ProgressController, Set<String>>(
+  (ref) {
+    return ProgressController(ref.watch(localProgressRepositoryProvider));
+  },
+);

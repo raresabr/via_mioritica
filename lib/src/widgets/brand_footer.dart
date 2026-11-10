@@ -13,11 +13,7 @@ class BrandFooter extends StatelessWidget {
   final String text;
   final String url;
 
-  const BrandFooter({
-    super.key,
-    required this.text,
-    required this.url,
-  });
+  const BrandFooter({super.key, required this.text, required this.url});
 
   Future<void> _openLink() async {
     final uri = Uri.tryParse(url);

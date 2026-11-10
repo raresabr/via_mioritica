@@ -1,10 +1,11 @@
 // lib/src/screens/stages_list_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/providers.dart';
+
 import '../providers/progress_providers.dart';
-import '../utils/app_strings.dart';
+import '../providers/providers.dart';
 import '../utils/app_colors.dart';
+import '../utils/app_strings.dart';
 import '../widgets/stage_card.dart';
 import 'stage_detail_screen.dart';
 
@@ -37,7 +38,11 @@ class StagesListScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: AppColors.textMuted),
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: AppColors.textMuted,
+              ),
               const SizedBox(height: 8),
               const Text(S.errorLoad),
               const SizedBox(height: 16),
@@ -64,14 +69,12 @@ class StagesListScreen extends ConsumerWidget {
             return StageCard(
               stage: stage,
               isCompleted: completedStageIds.contains(stage.id),
-              onToggleCompleted: (value) =>
-                  ref.read(progressProvider.notifier).setCompleted(
-                        stage.id,
-                        value,
-                      ),
+              onToggleCompleted: (value) => ref
+                  .read(progressProvider.notifier)
+                  .setCompleted(stage.id, value),
               onTap: () => Navigator.push(
                 ctx,
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (_) => StageDetailScreen(stage: stage),
                 ),
               ),
@@ -141,4 +144,3 @@ class _ProgressSummary extends StatelessWidget {
     );
   }
 }
-

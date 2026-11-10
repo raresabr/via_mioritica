@@ -19,11 +19,12 @@ class ForceUpdateScreen extends StatelessWidget {
   Future<void> _openStore(BuildContext context) async {
     final uri = Uri.tryParse(RemoteConfigService.storeUrl);
     final launched =
-        uri != null && await launchUrl(uri, mode: LaunchMode.externalApplication);
+        uri != null &&
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!launched && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text(S.forceUpdateStoreError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text(S.forceUpdateStoreError)));
     }
   }
 

@@ -1,12 +1,14 @@
 // lib/src/screens/splash_screen.dart
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import '../services/analytics_service.dart';
 import '../services/remote_config_service.dart';
 import '../utils/app_colors.dart';
 import 'force_update_screen.dart';
 import 'root_nav_screen.dart';
-import 'dart:async';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -49,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen>
           ? const ForceUpdateScreen()
           : const RootNavScreen();
       Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
+        PageRouteBuilder<void>(
           pageBuilder: (_, _, _) => destination,
           transitionsBuilder: (_, anim, _, child) =>
               FadeTransition(opacity: anim, child: child),

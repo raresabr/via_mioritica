@@ -12,11 +12,7 @@ class SegmentBadge extends StatelessWidget {
   final int order;
   final double size;
 
-  const SegmentBadge({
-    super.key,
-    required this.order,
-    this.size = 20,
-  });
+  const SegmentBadge({super.key, required this.order, this.size = 20});
 
   @override
   Widget build(BuildContext context) {

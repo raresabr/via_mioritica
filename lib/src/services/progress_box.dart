@@ -10,7 +10,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 /// clearing cached content.
 class ProgressBox {
   static const String boxName = 'user_progress';
-  static Box? _box;
+  static Box<dynamic>? _box;
 
   /// Must be called once before any repository reads/writes progress
   /// (done in `main.dart`, alongside `ContentCacheBox.init()`).
@@ -24,10 +24,10 @@ class ProgressBox {
     } else {
       await Hive.initFlutter();
     }
-    _box = await Hive.openBox(boxName);
+    _box = await Hive.openBox<dynamic>(boxName);
   }
 
-  static Box get instance {
+  static Box<dynamic> get instance {
     final box = _box;
     if (box == null) {
       throw StateError(

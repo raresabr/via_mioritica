@@ -26,8 +26,11 @@ class AboutScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline,
-                  size: 48, color: AppColors.textMuted),
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: AppColors.textMuted,
+              ),
               const SizedBox(height: 8),
               const Text(S.errorLoad),
               const SizedBox(height: 16),
@@ -67,26 +70,34 @@ class AboutScreen extends ConsumerWidget {
                   Text(
                     about.title.isNotEmpty ? about.title : S.appName,
                     style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold,
-                        color: AppColors.green),
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.green,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     about.body.isNotEmpty ? about.body : S.contentInProgress,
                     style: const TextStyle(
-                        fontSize: 14, height: 1.6, color: AppColors.textDark),
+                      fontSize: 14,
+                      height: 1.6,
+                      color: AppColors.textDark,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Center(
                     child: TextButton.icon(
                       onPressed: () => Navigator.push(
                         context,
-                        MaterialPageRoute(
+                        MaterialPageRoute<void>(
                           builder: (_) => const PrivacyPolicyScreen(),
                         ),
                       ),
-                      icon: const Icon(Icons.privacy_tip_outlined,
-                          size: 18, color: AppColors.textMuted),
+                      icon: const Icon(
+                        Icons.privacy_tip_outlined,
+                        size: 18,
+                        color: AppColors.textMuted,
+                      ),
                       label: const Text(
                         S.privacyPolicyLinkLabel,
                         style: TextStyle(

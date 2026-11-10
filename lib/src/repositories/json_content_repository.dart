@@ -53,11 +53,13 @@ class JsonContentRepository<T> {
 
   Future<T> _loadOnce() async {
     try {
-      final raw = await (_loadRaw?.call() ?? CacheFirstLoader.load(
-            cacheKey: cacheKey,
-            hostedUrl: hostedUrl,
-            loadFromBundledAsset: loadFromBundledAsset,
-          ));
+      final raw =
+          await (_loadRaw?.call() ??
+              CacheFirstLoader.load(
+                cacheKey: cacheKey,
+                hostedUrl: hostedUrl,
+                loadFromBundledAsset: loadFromBundledAsset,
+              ));
       final decoded = decode(raw);
       _cache = decoded;
       return decoded;

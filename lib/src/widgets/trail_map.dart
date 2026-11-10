@@ -72,14 +72,18 @@ class _TrailMapState extends ConsumerState<TrailMap> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.map_outlined, size: 48, color: AppColors.textMuted),
+            const Icon(
+              Icons.map_outlined,
+              size: 48,
+              color: AppColors.textMuted,
+            ),
             const SizedBox(height: 8),
             const Text(S.errorGpx),
           ],
         ),
       ),
       data: (rawPoints) {
-        final points = rawPoints.cast<LatLng>();
+        final points = rawPoints;
         final center = points.isNotEmpty
             ? _midPoint(points)
             : const LatLng(46.0, 25.0);
@@ -126,9 +130,10 @@ class _TrailMapState extends ConsumerState<TrailMap> {
                             border: Border.all(color: Colors.white, width: 3),
                             boxShadow: const [
                               BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2))
+                                color: Colors.black26,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
                             ],
                           ),
                         ),
@@ -144,10 +149,8 @@ class _TrailMapState extends ConsumerState<TrailMap> {
                 right: 16,
                 child: FloatingActionButton.small(
                   heroTag: 'follow_me',
-                  backgroundColor:
-                      _followUser ? AppColors.green : Colors.white,
-                  foregroundColor:
-                      _followUser ? Colors.white : AppColors.green,
+                  backgroundColor: _followUser ? AppColors.green : Colors.white,
+                  foregroundColor: _followUser ? Colors.white : AppColors.green,
                   onPressed: _toggleFollow,
                   tooltip: S.mapFollowMe,
                   child: const Icon(Icons.my_location),
@@ -168,8 +171,8 @@ class _TrailMapState extends ConsumerState<TrailMap> {
 
   LatLng _midPoint(List<LatLng> pts) {
     final lat = pts.map((p) => p.latitude).reduce((a, b) => a + b) / pts.length;
-    final lon = pts.map((p) => p.longitude).reduce((a, b) => a + b) / pts.length;
+    final lon =
+        pts.map((p) => p.longitude).reduce((a, b) => a + b) / pts.length;
     return LatLng(lat, lon);
   }
 }
-

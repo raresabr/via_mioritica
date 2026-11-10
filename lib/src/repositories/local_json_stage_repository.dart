@@ -1,9 +1,9 @@
 // lib/src/repositories/local_json_stage_repository.dart
 import '../models/stage_model.dart';
 import '../utils/content_config.dart';
+import '../utils/json_utils.dart';
 import 'json_content_repository.dart';
 import 'stage_repository.dart';
-import '../utils/json_utils.dart';
 
 class LocalJsonStageRepository implements StageRepository {
   late final JsonContentRepository<List<StageModel>> _content =

@@ -31,4 +31,3 @@ class AppColors {
   /// alone. `E` = "Etapa" (Romanian for "Stage").
   static String shortCodeForStageOrder(int order) => 'E${order + 1}';
 }
-

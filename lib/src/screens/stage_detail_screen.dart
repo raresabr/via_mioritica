@@ -1,8 +1,9 @@
 // lib/src/screens/stage_detail_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/stage_model.dart';
+
 import '../models/poi_model.dart';
+import '../models/stage_model.dart';
 import '../providers/progress_providers.dart';
 import '../providers/providers.dart';
 import '../services/analytics_service.dart';
@@ -91,7 +92,7 @@ class _StageDetailBody extends ConsumerWidget {
               background: GestureDetector(
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(
+                  MaterialPageRoute<void>(
                     builder: (_) => MapScreen(stage: stage),
                   ),
                 ),
@@ -110,7 +111,9 @@ class _StageDetailBody extends ConsumerWidget {
                       right: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.black54,
                           borderRadius: BorderRadius.circular(8),
@@ -118,12 +121,19 @@ class _StageDetailBody extends ConsumerWidget {
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.open_in_full,
-                                color: Colors.white, size: 12),
+                            Icon(
+                              Icons.open_in_full,
+                              color: Colors.white,
+                              size: 12,
+                            ),
                             SizedBox(width: 4),
-                            Text('Hartă completă',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 11)),
+                            Text(
+                              'Hartă completă',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 11,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -175,31 +185,34 @@ class _StageDetailBody extends ConsumerWidget {
                         ? stage.description
                         : S.contentInProgress,
                     style: const TextStyle(
-                        fontSize: 14, height: 1.6, color: AppColors.textDark),
+                      fontSize: 14,
+                      height: 1.6,
+                      color: AppColors.textDark,
+                    ),
                   ),
                   const SizedBox(height: 24),
 
                   // POI sections
                   ..._buildPoiSection(
-                      S.sectionCazare,
-                      stage.pois
-                          .where((p) => p.type == PoiType.cazare)
-                          .toList()),
+                    S.sectionCazare,
+                    stage.pois.where((p) => p.type == PoiType.cazare).toList(),
+                  ),
                   ..._buildPoiSection(
-                      S.sectionPopas,
-                      stage.pois
-                          .where((p) => p.type == PoiType.popas)
-                          .toList()),
+                    S.sectionPopas,
+                    stage.pois.where((p) => p.type == PoiType.popas).toList(),
+                  ),
                   ..._buildPoiSection(
-                      S.sectionObiective,
-                      stage.pois
-                          .where((p) => p.type == PoiType.obiectiv)
-                          .toList()),
+                    S.sectionObiective,
+                    stage.pois
+                        .where((p) => p.type == PoiType.obiectiv)
+                        .toList(),
+                  ),
                   ..._buildPoiSection(
-                      S.sectionRecomandari,
-                      stage.pois
-                          .where((p) => p.type == PoiType.recomandare)
-                          .toList()),
+                    S.sectionRecomandari,
+                    stage.pois
+                        .where((p) => p.type == PoiType.recomandare)
+                        .toList(),
+                  ),
 
                   const SizedBox(height: 40),
                 ],
@@ -218,9 +231,10 @@ class _StageDetailBody extends ConsumerWidget {
       if (pois.isEmpty)
         Padding(
           padding: const EdgeInsets.only(bottom: 16),
-          child: Text(S.noPois,
-              style:
-                  const TextStyle(color: AppColors.textMuted, fontSize: 13)),
+          child: Text(
+            S.noPois,
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+          ),
         )
       else
         ...pois.map((p) => PoiCard(poi: p)),
@@ -252,10 +266,7 @@ class _CompletedToggle extends StatelessWidget {
   final bool isCompleted;
   final ValueChanged<bool> onChanged;
 
-  const _CompletedToggle({
-    required this.isCompleted,
-    required this.onChanged,
-  });
+  const _CompletedToggle({required this.isCompleted, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -284,14 +295,16 @@ class _CompletedToggle extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: isCompleted
-                        ? AppColors.green
-                        : AppColors.textDark,
+                    color: isCompleted ? AppColors.green : AppColors.textDark,
                   ),
                 ),
               ),
               if (isCompleted)
-                const Icon(Icons.check_circle, color: AppColors.green, size: 20),
+                const Icon(
+                  Icons.check_circle,
+                  color: AppColors.green,
+                  size: 20,
+                ),
             ],
           ),
         ),
@@ -316,23 +329,27 @@ class _StatsRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _Stat(
-              icon: Icons.straighten,
-              value: '${stage.distanceKm} km',
-              label: S.stageDistance),
+            icon: Icons.straighten,
+            value: '${stage.distanceKm} km',
+            label: S.stageDistance,
+          ),
           _Stat(
-              icon: Icons.trending_up,
-              value: '+${stage.elevationGainM} m',
-              label: S.stageGain,
-              color: AppColors.green),
+            icon: Icons.trending_up,
+            value: '+${stage.elevationGainM} m',
+            label: S.stageGain,
+            color: AppColors.green,
+          ),
           _Stat(
-              icon: Icons.trending_down,
-              value: '-${stage.elevationLossM} m',
-              label: S.stageLoss,
-              color: AppColors.brown),
+            icon: Icons.trending_down,
+            value: '-${stage.elevationLossM} m',
+            label: S.stageLoss,
+            color: AppColors.brown,
+          ),
           _Stat(
-              icon: Icons.schedule,
-              value: stage.durationEstimate,
-              label: S.stageDuration),
+            icon: Icons.schedule,
+            value: stage.durationEstimate,
+            label: S.stageDuration,
+          ),
         ],
       ),
     );
@@ -358,14 +375,19 @@ class _Stat extends StatelessWidget {
       children: [
         Icon(icon, color: color, size: 18),
         const SizedBox(height: 4),
-        Text(value,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 13, color: color)),
-        Text(label,
-            style:
-                const TextStyle(fontSize: 10, color: AppColors.textMuted)),
+        Text(
+          value,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+            color: color,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10, color: AppColors.textMuted),
+        ),
       ],
     );
   }
 }
-

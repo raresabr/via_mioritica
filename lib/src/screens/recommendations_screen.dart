@@ -40,8 +40,11 @@ class RecommendationsScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline,
-                  size: 48, color: AppColors.textMuted),
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+                color: AppColors.textMuted,
+              ),
               const SizedBox(height: 8),
               const Text(S.errorLoad),
               const SizedBox(height: 16),
@@ -64,8 +67,10 @@ class RecommendationsScreen extends ConsumerWidget {
               return Card(
                 margin: const EdgeInsets.only(bottom: 10),
                 child: ListTile(
-                  leading: Icon(_iconForCategory(rec.category),
-                      color: AppColors.green),
+                  leading: Icon(
+                    _iconForCategory(rec.category),
+                    color: AppColors.green,
+                  ),
                   title: Text(
                     rec.title,
                     style: const TextStyle(fontWeight: FontWeight.bold),

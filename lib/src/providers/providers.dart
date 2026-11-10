@@ -1,5 +1,6 @@
 // lib/src/providers/providers.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 import '../models/about_content_model.dart';
 import '../models/photo_model.dart';
 import '../models/recommendation_model.dart';
@@ -51,15 +52,19 @@ final stagesProvider = FutureProvider<List<StageModel>>((ref) async {
 
 // ── Single stage ──────────────────────────────────────────────────────────────
 
-final stageByIdProvider =
-    FutureProvider.family<StageModel?, String>((ref, id) async {
+final stageByIdProvider = FutureProvider.family<StageModel?, String>((
+  ref,
+  id,
+) async {
   return ref.read(stageRepositoryProvider).getStageById(id);
 });
 
 // ── GPX track points per stage ────────────────────────────────────────────────
 
-final trackPointsProvider =
-    FutureProvider.family<List<dynamic>, String>((ref, gpxAssetPath) async {
+final trackPointsProvider = FutureProvider.family<List<LatLng>, String>((
+  ref,
+  gpxAssetPath,
+) async {
   return ref.read(gpxRepositoryProvider).getTrackPoints(gpxAssetPath);
 });
 
@@ -77,8 +82,10 @@ final photosProvider = FutureProvider<List<PhotoModel>>((ref) async {
   return ref.read(photoRepositoryProvider).loadPhotos();
 });
 
-final photosForStageProvider =
-    FutureProvider.family<List<PhotoModel>, String>((ref, stageId) async {
+final photosForStageProvider = FutureProvider.family<List<PhotoModel>, String>((
+  ref,
+  stageId,
+) async {
   return ref.read(photoRepositoryProvider).loadPhotosForStage(stageId);
 });
 
@@ -90,11 +97,12 @@ final aboutContentProvider = FutureProvider<AboutContentModel>((ref) async {
 
 // ── All stages' track points, for the full-route map (Faza 8.2) ──────────────
 
-final allStagesTrackPointsProvider =
-    FutureProvider<Map<String, List<dynamic>>>((ref) async {
+final allStagesTrackPointsProvider = FutureProvider<Map<String, List<LatLng>>>((
+  ref,
+) async {
   final stages = await ref.watch(stagesProvider.future);
   final gpxRepo = ref.read(gpxRepositoryProvider);
-  final result = <String, List<dynamic>>{};
+  final result = <String, List<LatLng>>{};
   for (final stage in stages) {
     result[stage.id] = await gpxRepo.getTrackPoints(stage.gpxFile);
   }

@@ -40,13 +40,8 @@ class FullTrailMapScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMap(
-    List<StageModel> stages,
-    Map<String, List<dynamic>> tracks,
-  ) {
-    final allPoints = <LatLng>[
-      for (final pts in tracks.values) ...pts.cast<LatLng>(),
-    ];
+  Widget _buildMap(List<StageModel> stages, Map<String, List<LatLng>> tracks) {
+    final allPoints = <LatLng>[for (final pts in tracks.values) ...pts];
     final center = allPoints.isNotEmpty
         ? LatLng(
             allPoints.map((p) => p.latitude).reduce((a, b) => a + b) /
@@ -77,7 +72,7 @@ class FullTrailMapScreen extends ConsumerWidget {
                 for (final stage in stages)
                   if ((tracks[stage.id] ?? []).isNotEmpty)
                     Polyline(
-                      points: (tracks[stage.id] as List).cast<LatLng>(),
+                      points: tracks[stage.id]!,
                       strokeWidth: 4,
                       color: AppColors.colorForStageOrder(stage.order),
                     ),
@@ -91,9 +86,7 @@ class FullTrailMapScreen extends ConsumerWidget {
                 for (final stage in stages)
                   if ((tracks[stage.id] ?? []).isNotEmpty)
                     Marker(
-                      point: _midPoint(
-                        (tracks[stage.id] as List).cast<LatLng>(),
-                      ),
+                      point: _midPoint(tracks[stage.id]!),
                       width: 22,
                       height: 22,
                       child: SegmentBadge(order: stage.order, size: 22),
