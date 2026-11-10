@@ -37,16 +37,28 @@ class CacheFirstLoader {
     required String cacheKey,
     required String hostedUrl,
     required Future<dynamic> Function() loadFromBundledAsset,
+    void Function(dynamic data)? validate,
   }) async {
     final box = ContentCacheBox.instance;
     final entry = box.get(cacheKey);
 
-    if (entry is Map && entry.containsKey('data')) {
+    if (entry is Map &&
+        entry.containsKey('data') &&
+        _isValid(entry['data'], validate)) {
       // Cache-first: return instantly, revalidate quietly in the background.
       unawaited(
-        _revalidateInBackground(cacheKey, hostedUrl, entry['etag'] as String?),
+        _revalidateInBackground(
+          cacheKey,
+          hostedUrl,
+          entry['etag'] as String?,
+          validate,
+        ),
       );
       return entry['data'];
+    }
+    if (entry != null) {
+      // Corrupt/incompatible cache entry: drop it and start from scratch.
+      await box.delete(cacheKey);
     }
 
     // Cache MISS: try the real hosted fetch first.
@@ -56,6 +68,7 @@ class CacheFirstLoader {
           .timeout(ContentConfig.networkTimeout);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+        validate?.call(data);
         await _store(cacheKey, data, response.headers['etag']);
         return data;
       }
@@ -73,6 +86,7 @@ class CacheFirstLoader {
     String cacheKey,
     String hostedUrl,
     String? etag,
+    void Function(dynamic data)? validate,
   ) async {
     try {
       final headers = etag == null
@@ -83,13 +97,26 @@ class CacheFirstLoader {
           .timeout(ContentConfig.networkTimeout);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        await _store(cacheKey, data, response.headers['etag']);
+        // Never let a malformed hosted file replace a working cache.
+        if (_isValid(data, validate)) {
+          await _store(cacheKey, data, response.headers['etag']);
+        }
       }
       // 304 Not Modified (or any other non-200) → cache is already current,
       // or hosted content is temporarily unreachable; nothing to do.
     } catch (_) {
       // Offline or hosted URL unreachable — silently keep the existing
       // cache, no error surfaced to the UI (this runs unawaited).
+    }
+  }
+
+  static bool _isValid(dynamic data, void Function(dynamic data)? validate) {
+    if (validate == null) return true;
+    try {
+      validate(data);
+      return true;
+    } catch (_) {
+      return false;
     }
   }
 

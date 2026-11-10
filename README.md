@@ -87,6 +87,9 @@ cp .env.example .env
 ```
 Get a **free** MapTiler API key at https://www.maptiler.com/ (100k tile loads/month free).
 
+A `--dart-define=MAPTILER_KEY=...` build argument takes precedence over `.env`
+(use it in CI/release builds).
+
 ### 4. Run on Android emulator
 ```bash
 flutter run
@@ -251,6 +254,41 @@ tab now renders all 3 stage polylines + legend correctly with no error.
 - `.env` is **gitignored** — never commit it
 - In CI: inject via `--dart-define=MAPTILER_KEY=$SECRET` instead of `.env`
 - Rotate key immediately if accidentally committed
+- A map tile key is inherently visible to the client (it is sent with every
+  tile request). Restrict it in the MapTiler dashboard (allowed apps/quota)
+- Android release signing: create `android/key.properties` (gitignored) with
+  `storeFile`, `storePassword`, `keyAlias`, `keyPassword`. Without it, release
+  builds fall back to the debug key (OK for App Distribution, **not** for
+  Google Play)
+
+---
+
+## Quality gates & CI
+
+```bash
+dart format --output=none --set-exit-if-changed lib test
+flutter analyze --fatal-infos     # strict-casts/inference/raw-types enabled
+flutter test --coverage
+```
+
+`.github/workflows/ci.yml` runs the same checks plus a debug Android build on
+every push/PR. Tests cover the cache-first loader (ETag/304/offline/malformed
+content), progress persistence (Hive in a temp dir), the offline-map controller,
+the bundled content (`assets/data/*.json`, every GPX parses, every referenced
+asset exists) and key screens.
+
+## Dependency notes
+
+- **State management**: Riverpod 3 (`Notifier`/`NotifierProvider`).
+- **Firebase** is pinned to `firebase_core 5.0.0` / `analytics 13.0.0` /
+  `crashlytics 6.0.0` / `remote_config 7.0.0` (iOS SDK 12.19.0): newer SDK
+  patches are no longer published to CocoaPods, and `objectbox_flutter_libs`
+  still requires CocoaPods on iOS. Unpin when SPM is possible.
+- **`latlong2` stays on 0.9.x and `objectbox` on 5.0.x** (see
+  `dependency_overrides` in `pubspec.yaml`) because `flutter_map_tile_caching`
+  10.1.1 constrains them.
+- Hosted content is validated (decoded) before being cached; a malformed file
+  never replaces a working cache and falls back to the bundled asset.
 
 ---
 

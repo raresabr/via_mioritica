@@ -59,6 +59,7 @@ class JsonContentRepository<T> {
                 cacheKey: cacheKey,
                 hostedUrl: hostedUrl,
                 loadFromBundledAsset: loadFromBundledAsset,
+                validate: decode,
               ));
       final decoded = decode(raw);
       _cache = decoded;

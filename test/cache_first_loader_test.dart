@@ -115,4 +115,55 @@ void main() {
     await CacheFirstLoader.invalidate('k');
     expect(ContentCacheBox.instance.get('k'), isNull);
   });
+
+  group('validation', () {
+    Future<dynamic> loadValidated(http.Client client) {
+      return http.runWithClient(
+        () => CacheFirstLoader.load(
+          cacheKey: 'k',
+          hostedUrl: _url,
+          loadFromBundledAsset: () async => ['bundled'],
+          validate: (d) => (d as List).cast<String>(),
+        ),
+        () => client,
+      );
+    }
+
+    test(
+      'malformed hosted JSON is rejected and bundled asset is used',
+      () async {
+        final client = MockClient(
+          (_) async => http.Response(json.encode({'not': 'a list'}), 200),
+        );
+
+        expect(await loadValidated(client), ['bundled']);
+      },
+    );
+
+    test('corrupt cache entry is dropped in favour of a fresh load', () async {
+      await ContentCacheBox.instance.put('k', {'data': 42, 'etag': 'v1'});
+      final client = MockClient(
+        (_) async => http.Response(json.encode(['fresh']), 200),
+      );
+
+      expect(await loadValidated(client), ['fresh']);
+    });
+
+    test(
+      'malformed revalidation payload does not overwrite a good cache',
+      () async {
+        await ContentCacheBox.instance.put('k', {
+          'data': ['good'],
+          'etag': 'v1',
+        });
+        final client = MockClient(
+          (_) async => http.Response(json.encode({'bad': true}), 200),
+        );
+
+        expect(await loadValidated(client), ['good']);
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        expect((ContentCacheBox.instance.get('k') as Map)['data'], ['good']);
+      },
+    );
+  });
 }
