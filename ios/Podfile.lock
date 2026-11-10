@@ -149,10 +149,10 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - ObjectBox (5.3.0)
+  - ObjectBox (5.1.1)
   - objectbox_flutter_libs (0.0.1):
     - Flutter
-    - ObjectBox (= 5.3.0)
+    - ObjectBox (= 5.1.1)
   - package_info_plus (0.4.5):
     - Flutter
   - permission_handler_apple (9.4.8):
@@ -250,8 +250,8 @@ SPEC CHECKSUMS:
   GoogleDataTransport: a24e58982ab3ba2f64d79613e027fe7f57e88539
   GoogleUtilities: 7dc09b3fa9ecb5c2298b952313d14628b61b9da3
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  ObjectBox: 2aae8ad350012cb53c6e7848064307cf68617f73
-  objectbox_flutter_libs: 42b57158b8c4869b731487f220e07d6edc6616e0
+  ObjectBox: 26871f7cce80a8bd2e610bf944aeaded730f6925
+  objectbox_flutter_libs: 28e7bd5ae78e831f141679c8a6e31632453b959f
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   permission_handler_apple: 92d754bbaa7361d436db2d6c3c1c2a0fdcec462e
   PromisesObjC: 752c3227f599e3467650e47ea36f433eeb10c273
